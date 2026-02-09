@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal - LG Plataforma</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+ 
     <style>
         /* Reset e Estilos Gerais */
         * {
@@ -1024,16 +1025,7 @@
             let db = null;
             let currentUser = null;
             
-            // Inicialização do Supabase - APENAS UMA INSTÂNCIA
-            const SUPABASE_URL = 'https://ledpqcynvqbdbccebhbo.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZHBxY3ludnFiZGJjY2ViaGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzODc3MjgsImV4cCI6MjA4NTk2MzcyOH0.s8GOzp4woujGuDc4vK9QXIf3cWLMENUnJfE4lt_YhLg';
-            
-            // Cria uma única instância do Supabase e a compartilha
-            window.supabase = window.supabaseClient = supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_ANON_KEY
-            );
-            
+                   
             // Inicialização do sistema
             initSystem();
             
@@ -1063,12 +1055,59 @@
                         db = event.target.result;
                         console.log('Banco de dados inicializado com sucesso');
                         resolve();
-                    };
-                    
+                    };               
+                                         
+
                     request.onupgradeneeded = (event) => {
                         const database = event.target.result;
                         
                         console.log('Criando/atualizando banco de dados');
+
+
+                 (function patchIndexedDB() {
+    const originalOpen = indexedDB.open;
+
+    indexedDB.open = function (...args) {
+        const request = originalOpen.apply(this, args);
+
+        request.addEventListener('success', () => {
+            const db = request.result;
+
+            const originalTransaction = db.transaction.bind(db);
+
+            db.transaction = function (storeNames, mode) {
+                const tx = originalTransaction(storeNames, mode);
+
+                tx.oncomplete = () => {
+                    storeNames = Array.isArray(storeNames) ? storeNames : [storeNames];
+
+                    storeNames.forEach(async (storeName) => {
+                        if (!STORE_TABLE_MAP[storeName]) return;
+
+                        const store = tx.objectStore(storeName);
+                        const all = store.getAll();
+
+                        all.onsuccess = async () => {
+                            for (const record of all.result) {
+                                await window.supabaseClient
+                                    .from(STORE_TABLE_MAP[storeName])
+                                    .upsert({
+                                        ...record,
+                                        user_id: (await window.supabaseClient.auth.getUser()).data.user.id,
+                                        updated_at: new Date().toISOString()
+                                    }, { onConflict: 'id' });
+                            }
+                        };
+                    });
+                };
+
+                return tx;
+            };
+        });
+
+        return request;
+    };
+})();
                         
                         // Criar todas as stores se não existirem
                         const storeNames = database.objectStoreNames;
@@ -2354,843 +2393,103 @@
     </script>
 
 <script>
-// Sistema de Sincronização CORRIGIDO
-(function () {
-    const SYNC_TABLE = 'lg_admin_sync';
-    const DB_NAME = 'portallegacy';
-    
-    const DEVICE_ID = localStorage.getItem('admin_device_id') || (() => {
-        const id = crypto.randomUUID();
-        localStorage.setItem('admin_device_id', id);
-        return id;
-    })();
-    
-    const syncCache = new Map();
-    
-    // Configuração do Supabase - AGUARDA INICIALIZAÇÃO
-    const SUPABASE_URL = 'https://ledpqcynvqbdbccebhbo.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZHBxY3ludnFiZGJjY2ViaGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzODc3MjgsImV4cCI6MjA4NTk2MzcyOH0.s8GOzp4woujGuDc4vK9QXIf3cWLMENUnJfE4lt_YhLg';
-    
-    // Função para aguardar o Supabase estar pronto
-    function waitForSupabase() {
-        return new Promise((resolve) => {
-            const check = () => {
-                if (window.supabase || window.supabaseClient) {
-                    resolve(window.supabase || window.supabaseClient);
-                } else {
-                    setTimeout(check, 100);
-                }
-            };
-            check();
-        });
-    }
-    
-    async function getUserId() {
-        try {
-            const supabase = await waitForSupabase();
-            const { data } = await supabase.auth.getSession();
-            return data?.session?.user?.id || null;
-        } catch (error) {
-            console.error('Erro ao obter usuário:', error);
-            return null;
-        }
-    }
-    
-    // Função para fazer push dos dados
-    async function push(store, method, key, value) {
-        const userId = await getUserId();
-        if (!userId) return;
-        
-        const cacheKey = `${store}-${key}`;
-        
-        if (method !== 'delete') {
-            const sig = JSON.stringify(value);
-            if (syncCache.get(cacheKey) === sig) return;
-            syncCache.set(cacheKey, sig);
-        } else {
-            syncCache.delete(cacheKey);
-        }
-        
-        try {
-            const supabase = await waitForSupabase();
-            const { error } = await supabase
-                .from(SYNC_TABLE)
-                .upsert({
-                    user_id: userId,
-                    db_name: DB_NAME,
-                    store_name: store,
-                    record_key: String(key),
-                    record_value: method === 'delete' ? null : value,
-                    is_deleted: method === 'delete',
-                    device_id: DEVICE_ID,
-                    updated_at: new Date().toISOString()
-                }, {
-                    onConflict: 'user_id,db_name,store_name,record_key'
-                });
-            
-            if (!error) {
-                console.log('✅ Dados sincronizados:', store, key);
-            }
-        } catch (error) {
-            console.error('❌ Erro na sincronização:', error);
-        }
-    }
-    
-    // Patch do IndexedDB para capturar alterações
-    (function patchIndexedDB() {
-        const originalOpen = indexedDB.open;
-        
-        indexedDB.open = function(name, version) {
-            const request = originalOpen.call(this, name, version);
-            
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                
-                // Interceptar transações
-                const originalTransaction = db.transaction;
-                db.transaction = function(storeNames, mode) {
-                    const transaction = originalTransaction.call(this, storeNames, mode);
-                    
-                    if (mode === 'readwrite') {
-                        const originalObjectStore = transaction.objectStore;
-                        
-                        transaction.objectStore = function(storeName) {
-                            const store = originalObjectStore.call(this, storeName);
-                            
-                            // Interceptar operações
-                            ['put', 'add', 'delete'].forEach(method => {
-                                const originalMethod = store[method];
-                                
-                                store[method] = function(...args) {
-                                    const result = originalMethod.apply(this, args);
-                                    
-                                    result.onsuccess = function() {
-                                        let key, value;
-                                        
-                                        if (method === 'delete') {
-                                            key = args[0];
-                                        } else {
-                                            value = args[0];
-                                            key = args[1] || result.result || value?.id;
-                                        }
-                                        
-                                        if (key !== undefined) {
-                                            push(storeName, method, key, value);
-                                        }
-                                    };
-                                    
-                                    return result;
-                                };
-                            });
-                            
-                            return store;
-                        };
-                    }
-                    
-                    return transaction;
-                };
-            };
-            
-            return request;
-        };
-        
-        console.log('🔄 Sistema de sincronização ativado');
-    })();
-    
-    // Inicializar sincronização
-    async function initSync() {
-        const userId = await getUserId();
-        if (!userId) {
-            console.log('🔄 Aguardando autenticação para sincronização...');
-            return;
-        }
-        
-        // Sincronizar a cada 30 segundos
-        setInterval(async () => {
-            console.log('🔄 Verificando sincronização...');
-        }, 30000);
-    }
-    
-    // Aguardar o Supabase estar pronto e inicializar
-    setTimeout(async () => {
-        try {
-            await waitForSupabase();
-            initSync();
-        } catch (error) {
-            console.error('Erro ao inicializar sincronização:', error);
-        }
-    }, 2000);
-})();
+const SUPABASE_URL = 'https://ledpqcynvqbdbccebhbo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZHBxY3ludnFiZGJjY2ViaGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzODc3MjgsImV4cCI6MjA4NTk2MzcyOH0.s8GOzp4woujGuDc4vK9QXIf3cWLMENUnJfE4lt_YhLg';
+
+window.supabase = window.supabaseClient =
+    supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
+
+<!-- 3. INTEGRAÇÃO DIRETA (ÚNICA) -->
 <script>
-// SISTEMA DE SINCRONIZAÇÃO EM TEMPO REAL - CORRIGIDO
+// INTEGRAÇÃO INDEXEDDB → TABELAS REAIS DO SUPABASE
 (function () {
-    const SYNC_TABLE = 'lg_user_sync';
-    const CANONICAL_DB = 'portallegacy';
-    
-    // Gerar ID do dispositivo
-    let storedId = sessionStorage.getItem('sync_device_id');
-    if (!storedId) {
-        storedId = crypto.randomUUID();
-        sessionStorage.setItem('sync_device_id', storedId);
-    }
-    const DEVICE_ID = storedId;
-    
-    // Variáveis de controle
-    let isReplicating = false; 
-    let syncInterval = null;
-    const syncCache = new Map();
 
-    // Função para obter o cliente Supabase (aguarda inicialização)
+    const STORE_TABLE_MAP = {
+        acessos: 'acessos',
+        administradores: 'administradores',
+        alertas: 'alertas',
+        arquivos: 'arquivos',
+        clientes: 'clientes',
+        configuracoes: 'configuracoes',
+        links: 'links',
+        orientacoes: 'orientacoes',
+        prazos: 'prazos',
+        projetos: 'projetos'
+    };
+
     function getClient() {
-        // Tenta obter a instância unificada do Supabase
-        if (window.supabase || window.supabaseClient) {
-            return window.supabase || window.supabaseClient;
-        }
-        
-        // Se não existir, cria uma nova (fallback)
-        console.warn('Supabase client não encontrado, criando fallback...');
-        const SUPABASE_URL = 'https://ledpqcynvqbdbccebhbo.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZHBxY3ludnFiZGJjY2ViaGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzODc3MjgsImV4cCI6MjA4NTk2MzcyOH0.s8GOzp4woujGuDc4vK9QXIf3cWLMENUnJfE4lt_YhLg';
-        
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        window.supabase = window.supabaseClient = client;
-        return client;
+        return window.supabase || null;
     }
 
-    // Função para aguardar o Supabase estar pronto
-    function waitForSupabase() {
-        return new Promise((resolve) => {
-            const check = () => {
-                const client = getClient();
-                if (client && client.auth) {
-                    resolve(client);
-                } else {
-                    setTimeout(check, 100);
-                }
-            };
-            check();
-        });
-    }
-
-    // Obter ID do usuário atual
     async function getUserId() {
-        try {
-            const client = await waitForSupabase();
-            const { data } = await client.auth.getSession();
-            return data?.session?.user?.id || null;
-        } catch (error) {
-            console.error('Erro ao obter ID do usuário:', error);
-            return null;
-        }
+        const client = getClient();
+        if (!client) return null;
+
+        const { data } = await client.auth.getSession();
+        return data?.session?.user?.id || null;
     }
 
-    // Gerar assinatura para comparação
-    function generateSignature(value) {
-        if (value === null || value === undefined) return 'null';
-        return JSON.stringify(value);
-    }
-
-    // Interceptar operações do IndexedDB
     const originalMethods = {
         put: IDBObjectStore.prototype.put,
         add: IDBObjectStore.prototype.add,
         delete: IDBObjectStore.prototype.delete
     };
 
-    // Agendar upload em tempo real
-    async function scheduleRealtimeUpload(storeName, method, key, value) {
-        if (isReplicating) return;
+    async function sendToSupabase(storeName, method, key, value) {
+        const table = STORE_TABLE_MAP[storeName];
+        if (!table) return;
 
         const client = getClient();
         const userId = await getUserId();
         if (!client || !userId) return;
 
-        const cacheKey = `${storeName}-${key}`;
-        
-        // Atualiza cache local imediatamente
         if (method === 'delete') {
-            syncCache.delete(cacheKey);
-        } else {
-            syncCache.set(cacheKey, generateSignature(value));
+            await client
+                .from(table)
+                .delete()
+                .eq('id', key)
+                .eq('user_id', userId);
+            return;
         }
 
-        // Envia para o Supabase
-        client.from(SYNC_TABLE).upsert({
+        const record = {
+            ...value,
+            id: key || value?.id,
             user_id: userId,
-            db_name: CANONICAL_DB,
-            store_name: storeName,
-            record_key: String(key),
-            record_value: method === 'delete' ? null : value,
-            is_deleted: method === 'delete',
-            device_id: DEVICE_ID,
             updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id,db_name,store_name,record_key' })
-        .then(({ error }) => {
-            if (error) {
-                console.warn(`⚠️ Falha no upload de sincronização:`, error.message);
-            } else {
-                console.log(`✅ Upload: ${storeName}-${key}`);
-            }
-        });
+        };
+
+        await client.from(table).upsert(record, { onConflict: 'id' });
     }
 
-    // Sobrescrever métodos do IndexedDB para capturar alterações
     IDBObjectStore.prototype.put = function (value, key) {
         const request = originalMethods.put.apply(this, arguments);
-        const storeName = this.name;
-        request.onsuccess = (event) => {
-            const resultKey = key || event.target.result;
-            scheduleRealtimeUpload(storeName, 'put', resultKey, value);
-        };
+        request.onsuccess = (e) =>
+            sendToSupabase(this.name, 'put', key || e.target.result, value);
         return request;
     };
 
     IDBObjectStore.prototype.add = function (value, key) {
         const request = originalMethods.add.apply(this, arguments);
-        const storeName = this.name;
-        request.onsuccess = (event) => {
-            const resultKey = key || event.target.result;
-            scheduleRealtimeUpload(storeName, 'add', resultKey, value);
-        };
+        request.onsuccess = (e) =>
+            sendToSupabase(this.name, 'add', key || e.target.result, value);
         return request;
     };
 
     IDBObjectStore.prototype.delete = function (key) {
         const request = originalMethods.delete.apply(this, arguments);
-        const storeName = this.name;
-        request.onsuccess = () => {
-            scheduleRealtimeUpload(storeName, 'delete', key, null);
-        };
+        request.onsuccess = () =>
+            sendToSupabase(this.name, 'delete', key, null);
         return request;
     };
 
-    console.log('🔄 Sistema de sincronização em tempo real ativado');
-
-    // Loop inteligente de upload
-    async function smartUploadLoop() {
-        const userId = await getUserId();
-        const client = getClient();
-        if (!userId || !client) return;
-
-        return new Promise((resolve) => {
-            const request = indexedDB.open(CANONICAL_DB);
-            
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                const storeNames = Array.from(db.objectStoreNames);
-                
-                let pendingOperations = 0;
-                let changedRecords = [];
-
-                storeNames.forEach(storeName => {
-                    const tx = db.transaction([storeName], 'readonly');
-                    const store = tx.objectStore(storeName);
-                    
-                    // Obter todos os registros e chaves
-                    const getAllRequest = store.getAll();
-                    const getKeysRequest = store.getAllKeys();
-                    
-                    pendingOperations += 2;
-                    
-                    getAllRequest.onsuccess = (getAllEvent) => {
-                        const records = getAllEvent.target.result;
-                        getKeysRequest.onsuccess = (getKeysEvent) => {
-                            const keys = getKeysEvent.target.result;
-                            
-                            records.forEach((item, index) => {
-                                const key = String(keys[index]);
-                                const cacheKey = `${storeName}-${key}`;
-                                const currentSig = generateSignature(item);
-
-                                if (syncCache.get(cacheKey) !== currentSig) {
-                                    changedRecords.push({
-                                        user_id: userId,
-                                        db_name: CANONICAL_DB,
-                                        store_name: storeName,
-                                        record_key: key,
-                                        record_value: item,
-                                        is_deleted: false,
-                                        device_id: DEVICE_ID,
-                                        updated_at: new Date().toISOString()
-                                    });
-                                    syncCache.set(cacheKey, currentSig);
-                                }
-                            });
-                            
-                            pendingOperations -= 2;
-                            if (pendingOperations === 0) {
-                                processChangedRecords(changedRecords, client);
-                                resolve();
-                            }
-                        };
-                    };
-                });
-                
-                if (storeNames.length === 0) {
-                    resolve();
-                }
-            };
-            
-            request.onerror = () => resolve();
-        });
-    }
-
-    // Processar registros alterados
-    async function processChangedRecords(changedRecords, client) {
-        if (changedRecords.length > 0) {
-            console.log(`📤 Upload inteligente: ${changedRecords.length} itens`);
-            try {
-                await client.from(SYNC_TABLE).upsert(changedRecords, { 
-                    onConflict: 'user_id,db_name,store_name,record_key' 
-                });
-            } catch (error) {
-                console.error('Erro no upload inteligente:', error);
-            }
-        }
-    }
-
-    // Loop inteligente de download
-    async function smartDownloadLoop() {
-        const userId = await getUserId();
-        const client = getClient();
-        if (!userId || !client) return;
-
-        try {
-            const { data, error } = await client
-                .from(SYNC_TABLE)
-                .select('*')
-                .eq('user_id', userId)
-                .eq('db_name', CANONICAL_DB);
-
-            if (error || !data || !data.length) return;
-
-            // Processar os dados recebidos
-            processDownloadedData(data);
-        } catch (error) {
-            console.error('Erro no download inteligente:', error);
-        }
-    }
-
-    // Processar dados baixados
-    function processDownloadedData(data) {
-        return new Promise((resolve) => {
-            const request = indexedDB.open(CANONICAL_DB);
-            
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                const localStores = Array.from(db.objectStoreNames);
-                
-                // Filtrar registros válidos
-                const validRecords = data.filter(r => localStores.includes(r.store_name));
-                if (!validRecords.length) {
-                    resolve(0);
-                    return;
-                }
-
-                const tx = db.transaction([...new Set(validRecords.map(r => r.store_name))], 'readwrite');
-                isReplicating = true;
-                
-                let writes = 0;
-
-                validRecords.forEach(record => {
-                    // Ignorar registros do próprio dispositivo
-                    if (record.device_id === DEVICE_ID) return;
-
-                    const store = tx.objectStore(record.store_name);
-                    const key = !isNaN(record.record_key) ? Number(record.record_key) : record.record_key;
-                    const cacheKey = `${record.store_name}-${record.record_key}`;
-                    
-                    // Exclusão de registro
-                    if (record.is_deleted) {
-                        store.delete(key);
-                        if (syncCache.has(cacheKey)) {
-                            syncCache.delete(cacheKey);
-                            writes++;
-                        }
-                        return;
-                    }
-
-                    // Verificar se o registro mudou
-                    const incomingSig = generateSignature(record.record_value);
-                    const localSig = syncCache.get(cacheKey);
-
-                    if (incomingSig === localSig) {
-                        return; // Nenhuma mudança
-                    }
-
-                    // Atualizar registro
-                    const value = record.record_value;
-                    if (store.keyPath && value && typeof value === 'object') {
-                        if (!value[store.keyPath]) value[store.keyPath] = key;
-                        store.put(value);
-                    } else {
-                        store.put(value, key);
-                    }
-                    
-                    syncCache.set(cacheKey, incomingSig);
-                    writes++;
-                });
-
-                tx.oncomplete = () => {
-                    isReplicating = false;
-                    if (writes > 0) {
-                        console.log(`📥 Download sincronizado: ${writes} alterações aplicadas`);
-                    }
-                    resolve(writes);
-                };
-                
-                tx.onerror = () => {
-                    isReplicating = false;
-                    console.error('Erro na transação de download');
-                    resolve(0);
-                };
-            };
-            
-            request.onerror = () => resolve(0);
-        });
-    }
-
-    // Iniciar serviço de sincronização
-    async function startService() {
-        try {
-            const userId = await getUserId();
-            if (!userId) {
-                console.log('⏳ Aguardando autenticação para sincronização...');
-                return;
-            }
-
-            console.log('🚀 Iniciando serviço de sincronização para usuário:', userId);
-            const client = getClient();
-
-            // Configurar canal em tempo real
-            const channel = client.channel('global-sync-live')
-                .on('postgres_changes', { 
-                    event: '*', 
-                    schema: 'public', 
-                    table: SYNC_TABLE, 
-                    filter: `user_id=eq.${userId}` 
-                }, (payload) => {
-                    // Só dispara download se o evento veio de OUTRO dispositivo
-                    if (payload.new && payload.new.device_id !== DEVICE_ID) {
-                        console.log('🔔 Alteração recebida em tempo real');
-                        smartDownloadLoop();
-                    }
-                })
-                .subscribe((status) => {
-                    if (status === 'SUBSCRIBED') {
-                        console.log('✅ Inscrito no canal de sincronização em tempo real');
-                    }
-                });
-
-            // Upload inicial
-            await smartUploadLoop();
-            
-            // Download inicial com pequeno delay
-            setTimeout(smartDownloadLoop, 500);
-
-            // Configurar sincronização periódica
-            if (syncInterval) clearInterval(syncInterval);
-            syncInterval = setInterval(async () => {
-                await smartUploadLoop();
-                await smartDownloadLoop();
-            }, 10000); // Sincronizar a cada 10 segundos
-
-        } catch (error) {
-            console.error('❌ Erro ao iniciar serviço de sincronização:', error);
-        }
-    }
-
-    // Parar serviço de sincronização
-    function stopService() {
-        if (syncInterval) {
-            clearInterval(syncInterval);
-            syncInterval = null;
-        }
-        console.log('⏹️ Serviço de sincronização parado');
-    }
-
-    // Configurar listener de autenticação
-    async function setupAuthListener() {
-        try {
-            const client = await waitForSupabase();
-            
-            client.auth.onAuthStateChange((event, session) => {
-                console.log('🔐 Evento de autenticação:', event, session ? 'Usuário logado' : 'Usuário deslogado');
-
-                if (event === 'SIGNED_IN' && session) {
-                    console.log('✅ Usuário autenticado, iniciando sincronização...');
-                    startService();
-                }
-
-                if (event === 'SIGNED_OUT') {
-                    console.log('🚪 Usuário deslogado, parando sincronização...');
-                    stopService();
-                }
-            });
-            
-            // Verificar se já há uma sessão ativa
-            const { data: { session } } = await client.auth.getSession();
-            if (session) {
-                console.log('🔍 Sessão existente encontrada');
-                startService();
-            }
-            
-        } catch (error) {
-            console.error('❌ Erro ao configurar listener de autenticação:', error);
-        }
-    }
-
-    // Inicializar o sistema de sincronização quando o DOM estiver pronto
-    function initSyncSystem() {
-        console.log('🔄 Inicializando sistema de sincronização...');
-        
-        // Aguardar um pouco para garantir que o Supabase esteja carregado
-        setTimeout(async () => {
-            try {
-                await setupAuthListener();
-            } catch (error) {
-                console.error('❌ Falha na inicialização da sincronização:', error);
-                // Tentar novamente após 3 segundos
-                setTimeout(initSyncSystem, 3000);
-            }
-        }, 1000);
-    }
-
-    // Iniciar quando o DOM estiver pronto
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSyncSystem);
-    } else {
-        initSyncSystem();
-    }
-
-    // Exportar funções para debug (opcional)
-    window.debugSync = {
-        startService,
-        stopService,
-        smartUploadLoop,
-        smartDownloadLoop,
-        getDeviceId: () => DEVICE_ID,
-        clearCache: () => {
-            syncCache.clear();
-            console.log('🧹 Cache de sincronização limpo');
-        }
-    };
-})();
-</script>
-
-<script>
-// SISTEMA DE RESTAURAÇÃO DE BACKUP
-(function() {
-    // Botão de restauração (se existir)
-    const restoreBtn = document.getElementById('restoreBtn');
-    if (restoreBtn) {
-        restoreBtn.addEventListener('click', function() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = async function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                try {
-                    const text = await file.text();
-                    const backupData = JSON.parse(text);
-                    
-                    if (confirm(`Deseja restaurar backup com ${backupData.clients?.length || 0} clientes e ${backupData.projects?.length || 0} projetos?`)) {
-                        await restoreBackup(backupData);
-                    }
-                } catch (error) {
-                    alert('Erro ao ler arquivo de backup: ' + error.message);
-                }
-            };
-            
-            input.click();
-        });
-    }
-    
-    async function restoreBackup(backupData) {
-        const DB_NAME = 'portallegacy';
-        
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME);
-            
-            request.onerror = () => reject('Erro ao abrir banco de dados');
-            
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                
-                // Função para restaurar dados em uma store
-                const restoreStore = (storeName, data) => {
-                    return new Promise((resolveStore, rejectStore) => {
-                        if (!data || !Array.isArray(data)) {
-                            resolveStore(0);
-                            return;
-                        }
-                        
-                        const tx = db.transaction([storeName], 'readwrite');
-                        const store = tx.objectStore(storeName);
-                        
-                        // Limpar store existente
-                        const clearRequest = store.clear();
-                        
-                        clearRequest.onsuccess = () => {
-                            let added = 0;
-                            let errors = 0;
-                            
-                            // Inserir novos dados
-                            data.forEach((item, index) => {
-                                try {
-                                    const addRequest = store.add(item);
-                                    addRequest.onsuccess = () => added++;
-                                    addRequest.onerror = () => errors++;
-                                } catch (error) {
-                                    errors++;
-                                }
-                            });
-                            
-                            tx.oncomplete = () => {
-                                console.log(`✅ ${storeName}: ${added} restaurados, ${errors} erros`);
-                                resolveStore(added);
-                            };
-                            
-                            tx.onerror = () => rejectStore(`Erro na transação ${storeName}`);
-                        };
-                        
-                        clearRequest.onerror = () => rejectStore(`Erro ao limpar ${storeName}`);
-                    });
-                };
-                
-                // Restaurar todas as stores
-                const restorePromises = [];
-                
-                if (backupData.clients) {
-                    restorePromises.push(restoreStore('clients', backupData.clients));
-                }
-                
-                if (backupData.projects) {
-                    restorePromises.push(restoreStore('projects', backupData.projects));
-                }
-                
-                if (backupData.links) {
-                    restorePromises.push(restoreStore('links', backupData.links));
-                }
-                
-                if (backupData.orientations) {
-                    restorePromises.push(restoreStore('orientations', backupData.orientations));
-                }
-                
-                if (backupData.alerts) {
-                    restorePromises.push(restoreStore('alerts', backupData.alerts));
-                }
-                
-                // Executar todas as restaurações
-                Promise.all(restorePromises)
-                    .then(results => {
-                        const total = results.reduce((sum, count) => sum + count, 0);
-                        alert(`✅ Backup restaurado com sucesso!\n${total} registros importados.`);
-                        
-                        // Recarregar a página para atualizar os dados
-                        setTimeout(() => location.reload(), 1000);
-                        resolve(total);
-                    })
-                    .catch(error => {
-                        alert('❌ Erro ao restaurar backup: ' + error);
-                        reject(error);
-                    });
-            };
-        });
-    }
-})();
-</script>
-
-<script>
-// UTILITÁRIOS ADICIONAIS
-(function() {
-    // Verificar conexão com a internet
-    function updateOnlineStatus() {
-        const statusElement = document.getElementById('syncStatus');
-        if (statusElement) {
-            if (navigator.onLine) {
-                statusElement.innerHTML = `
-                    <i class="fas fa-wifi"></i>
-                    <div>
-                        <strong>Sincronização Ativa</strong>
-                        <p>Conectado e sincronizando com a nuvem</p>
-                    </div>
-                `;
-                statusElement.className = 'alert alert-success';
-            } else {
-                statusElement.innerHTML = `
-                    <i class="fas fa-wifi-slash"></i>
-                    <div>
-                        <strong>Sincronização Offline</strong>
-                        <p>Trabalhando localmente - dados serão sincronizados quando a conexão voltar</p>
-                    </div>
-                `;
-                statusElement.className = 'alert alert-warning';
-            }
-        }
-    }
-    
-    // Adicionar listeners de conexão
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    
-    // Atualizar status inicial
-    setTimeout(updateOnlineStatus, 1000);
-    
-    // Função para limpar cache do Supabase (para debug)
-    window.clearSupabaseCache = function() {
-        if (window.supabase && window.supabase.auth) {
-            window.supabase.auth.signOut();
-            localStorage.removeItem('lg_admin_session');
-            sessionStorage.clear();
-            alert('Cache do Supabase limpo!');
-        }
-    };
-    
-    // Adicionar atalhos de teclado
-    document.addEventListener('keydown', function(e) {
-        // Ctrl+S para salvar (quando em formulários)
-        if (e.ctrlKey && e.key === 's') {
-            e.preventDefault();
-            const activeModal = document.querySelector('.modal.active');
-            if (activeModal) {
-                const saveButton = activeModal.querySelector('button[type="submit"]');
-                if (saveButton) saveButton.click();
-            }
-        }
-        
-        // Esc para fechar modais
-        if (e.key === 'Escape') {
-            const activeModal = document.querySelector('.modal.active');
-            if (activeModal) {
-                const closeButton = activeModal.querySelector('.modal-close');
-                if (closeButton) closeButton.click();
-            }
-        }
-    });
-    
-    // Notificação de nova versão (opcional)
-    const currentVersion = '2.0.0';
-    const storedVersion = localStorage.getItem('lg_admin_version');
-    
-    if (!storedVersion || storedVersion !== currentVersion) {
-        console.log(`🆕 Nova versão detectada: ${storedVersion} → ${currentVersion}`);
-        localStorage.setItem('lg_admin_version', currentVersion);
-        
-        // Pode adicionar uma notificação visual aqui se desejar
-        setTimeout(() => {
-            if (confirm('Sistema atualizado! Deseja ver as novidades?')) {
-                // Redirecionar para changelog ou mostrar modal
-                alert(`Versão ${currentVersion}\n\n• Sistema de sincronização melhorado\n• Correções de bugs\n• Performance aprimorada`);
-            }
-        }, 3000);
-    }
+    console.log('✅ Integração IndexedDB → Supabase ativa');
 })();
 </script>
 
 </body>
 </html>
+
+
+
