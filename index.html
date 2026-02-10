@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - LG Plataforma</title>
+    <title>Portal Administrativo - LG Plataforma</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
- 
     <style>
-        /* Reset e Estilos Gerais */
         * {
             margin: 0;
             padding: 0;
@@ -51,7 +49,6 @@
             padding: 20px;
         }
 
-        /* Estilos Glass Neon */
         .glass-card {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -68,26 +65,11 @@
             border-color: var(--primary);
         }
 
-        .glass-card-secondary {
-            border-color: rgba(157, 78, 221, 0.3);
-        }
-
-        .glass-card-secondary:hover {
-            box-shadow: var(--shadow), var(--neon-glow-secondary);
-            border-color: var(--secondary);
-        }
-
         .neon-text {
             color: var(--primary);
             text-shadow: 0 0 5px var(--primary);
         }
 
-        .neon-text-secondary {
-            color: var(--secondary);
-            text-shadow: 0 0 5px var(--secondary);
-        }
-
-        /* Botões */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -120,9 +102,9 @@
             box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
         }
 
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.5);
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #009966);
+            color: white;
         }
 
         .btn-danger {
@@ -131,22 +113,11 @@
             box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
         }
 
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.5);
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
         }
 
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: rgba(0, 217, 255, 0.1);
-        }
-
-        /* Formulários */
         .form-group {
             margin-bottom: 20px;
         }
@@ -179,7 +150,96 @@
             color: var(--gray);
         }
 
-        /* Tabelas */
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .header {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
         .table-responsive {
             overflow-x: auto;
         }
@@ -208,2288 +268,1965 @@
             background: rgba(0, 217, 255, 0.05);
         }
 
-        /* Badges */
         .badge {
             display: inline-block;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
+            text-transform: uppercase;
         }
 
         .badge-success {
             background: rgba(0, 204, 136, 0.2);
             color: var(--success);
+            border: 1px solid var(--success);
         }
 
         .badge-warning {
             background: rgba(255, 170, 0, 0.2);
             color: var(--warning);
+            border: 1px solid var(--warning);
         }
 
         .badge-danger {
             background: rgba(255, 51, 102, 0.2);
             color: var(--danger);
+            border: 1px solid var(--danger);
         }
 
         .badge-info {
             background: rgba(0, 217, 255, 0.2);
             color: var(--primary);
+            border: 1px solid var(--primary);
         }
 
-        /* Layout */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--light);
-        }
-
-        .logo i {
-            color: var(--primary);
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        /* Dashboard */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 30px;
-        }
-
-        .card-title {
-            font-size: 20px;
-            margin-bottom: 16px;
-            color: var(--light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title i {
-            color: var(--primary);
-        }
-
-        /* Listas */
-        .list {
-            list-style: none;
-        }
-
-        .list-item {
-            padding: 16px;
-            border-bottom: 1px solid rgba(100, 100, 150, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        .list-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: rgba(0, 217, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 24px;
-            overflow-x: auto;
-        }
-
-        .tab {
-            padding: 14px 24px;
-            background: transparent;
-            border: none;
-            color: var(--gray);
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover {
-            color: var(--light);
-        }
-
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Links */
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .link-card {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 20px;
-            background: var(--glass-light);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: var(--light);
-        }
-
-        .link-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Alertas */
-        .alert {
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 4px solid var(--primary);
-        }
-
-        .alert-warning {
-            background: rgba(255, 170, 0, 0.1);
-            border-left-color: var(--warning);
-        }
-
-        .alert-success {
-            background: rgba(0, 204, 136, 0.1);
-            border-left-color: var(--success);
-        }
-
-        .alert-danger {
-            background: rgba(255, 51, 102, 0.1);
-            border-left-color: var(--danger);
-        }
-
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 2000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 9, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
         }
 
         .modal.active {
             display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
-            background: var(--dark-light);
+            background: var(--glass-light);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            width: 100%;
+            padding: 30px;
             max-width: 600px;
+            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow), var(--neon-glow);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
         }
 
-        .modal-header h2 {
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
             color: var(--primary);
         }
 
-        .modal-close {
-            background: none;
+        .close-btn {
+            background: transparent;
             border: none;
             color: var(--gray);
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        .modal-close:hover {
-            color: var(--light);
+        .close-btn:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
         }
 
-        .modal-body {
-            padding: 20px;
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-            
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .links-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .table th, .table td {
-                padding: 10px 12px;
-            }
-        }
-
-        /* Animações */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        /* Status */
-        .status-indicator {
-            display: inline-flex;
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--glass-light);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: var(--shadow);
+            z-index: 3000;
+            display: none;
             align-items: center;
-            gap: 6px;
+            gap: 12px;
+            min-width: 300px;
         }
 
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+        .toast.active {
+            display: flex;
+            animation: slideIn 0.3s ease;
         }
 
-        .status-dot.active {
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
-        .status-dot.inactive {
-            background: var(--danger);
-            box-shadow: 0 0 8px var(--danger);
+        .toast-success {
+            border-left: 4px solid var(--success);
         }
 
-        /* Login */
-        .login-container {
-            max-width: 400px;
-            margin: 80px auto;
-            animation: fadeIn 0.8s ease;
+        .toast-danger {
+            border-left: 4px solid var(--danger);
         }
 
-        .login-header {
+        .toast-info {
+            border-left: 4px solid var(--primary);
+        }
+
+        .empty-state {
             text-align: center;
-            margin-bottom: 30px;
+            padding: 60px 20px;
+            color: var(--gray);
         }
 
-        .login-header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Utilitários */
-        .text-center {
-            text-align: center;
-        }
-
-        .mb-20 {
+        .empty-state i {
+            font-size: 64px;
             margin-bottom: 20px;
-        }
-
-        .mt-20 {
-            margin-top: 20px;
-        }
-
-        .hidden {
-            display: none !important;
+            opacity: 0.5;
         }
 
         .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 217, 255, 0.3);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 217, 255, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sync-log {
+            background: rgba(10, 10, 15, 0.8);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .sync-log-entry {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(100, 100, 150, 0.1);
+        }
+
+        .sync-log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .sync-log-success {
+            color: var(--success);
+        }
+
+        .sync-log-error {
+            color: var(--danger);
+        }
+
+        .sync-log-info {
+            color: var(--primary);
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--gray);
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Tela de Login -->
-    <div id="loginScreen" class="container">
-        <div class="login-container">
-            <div class="login-header">
-                <h1><i class="fas fa-user-shield"></i> Admin Portal</h1>
-                <p>Sistema Administrativo LG Plataforma</p>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-rocket"></i> LG Admin
             </div>
-            
-            <div class="glass-card">
-                <h2 class="card-title">Login Administrativo</h2>
-                <form id="adminLoginForm">
-                    <div class="form-group">
-                        <label class="form-label" for="adminEmail">E-mail</label>
-                        <input type="email" id="adminEmail" class="form-control" placeholder="Digite seu e-mail" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="adminPassword">Senha</label>
-                        <input type="password" id="adminPassword" class="form-control" placeholder="Digite sua senha" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-key"></i> Acessar Sistema
-                    </button>
-                </form>
-                <div id="loginMessage" class="alert hidden mt-20"></div>
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="showSection('dashboard')">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </button>
+                <button class="nav-btn" onclick="showSection('clients')">
+                    <i class="fas fa-users"></i> Clientes
+                </button>
+                <button class="nav-btn" onclick="showSection('projects')">
+                    <i class="fas fa-project-diagram"></i> Projetos
+                </button>
+                <button class="nav-btn" onclick="showSection('deadlines')">
+                    <i class="fas fa-calendar-check"></i> Prazos
+                </button>
+                <button class="nav-btn" onclick="showSection('alerts')">
+                    <i class="fas fa-bell"></i> Alertas
+                </button>
+                <button class="nav-btn" onclick="showSection('links')">
+                    <i class="fas fa-link"></i> Links
+                </button>
+                <button class="nav-btn" onclick="showSection('sync')">
+                    <i class="fas fa-sync-alt"></i> Sincronização
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Área Administrativa -->
-    <div id="adminArea" class="container hidden">
-        <div class="header">
-            <div class="logo">
-                <i class="fas fa-user-shield"></i>
-                <span>Área Administrativa</span>
-            </div>
-            <div class="user-menu">
-                <div class="user-info">
-                    <div class="avatar" id="adminAvatar">AD</div>
-                    <div>
-                        <div id="adminName">Administrador</div>
-                        <small id="adminEmailDisplay">admin@email.com</small>
-                    </div>
-                </div>
-                <button class="btn btn-danger" id="adminLogout">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
-        </div>
+    <div class="container">
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard" class="section active">
+            <h1 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </h1>
 
-        <!-- Dashboard -->
-        <div class="glass-card">
-            <h2 class="card-title"><i class="fas fa-tachometer-alt"></i> Dashboard Administrativo</h2>
-            <div class="dashboard-grid">
-                <div class="glass-card glass-card-secondary">
-                    <h3><i class="fas fa-users"></i> Clientes Ativos</h3>
-                    <p id="activeClientsCount" style="font-size: 36px; font-weight: 700; color: var(--primary);">0</p>
+            <div class="grid grid-2">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalClients">0</div>
+                    <div class="stat-label">Total de Clientes</div>
                 </div>
-                <div class="glass-card glass-card-secondary">
-                    <h3><i class="fas fa-project-diagram"></i> Projetos Ativos</h3>
-                    <p id="activeProjectsCount" style="font-size: 36px; font-weight: 700; color: var(--secondary);">0</p>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalProjects">0</div>
+                    <div class="stat-label">Projetos Ativos</div>
                 </div>
-                <div class="glass-card glass-card-secondary">
-                    <h3><i class="fas fa-clock"></i> Prazos Hoje</h3>
-                    <p id="todayDeadlinesCount" style="font-size: 36px; font-weight: 700; color: var(--warning);">0</p>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalDeadlines">0</div>
+                    <div class="stat-label">Prazos Pendentes</div>
                 </div>
-                <div class="glass-card glass-card-secondary">
-                    <h3><i class="fas fa-bell"></i> Alertas Ativos</h3>
-                    <p id="activeAlertsCount" style="font-size: 36px; font-weight: 700; color: var(--danger);">0</p>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAlerts">0</div>
+                    <div class="stat-label">Alertas Ativos</div>
                 </div>
             </div>
         </div>
 
-        <!-- Abas da Administração -->
-        <div class="glass-card">
-            <div class="tabs" id="adminTabs">
-                <button class="tab active" data-tab="clients">Gerenciar Clientes</button>
-                <button class="tab" data-tab="projects">Gerenciar Projetos</button>
-                <button class="tab" data-tab="alerts">Alertas e Notificações</button>
-                <button class="tab" data-tab="content">Conteúdo Personalizado</button>
-                <button class="tab" data-tab="settings">Configurações</button>
-            </div>
+        <!-- CLIENTS SECTION -->
+        <div id="clients" class="section">
+            <h1 class="section-title">
+                <i class="fas fa-users"></i>
+                Gerenciamento de Clientes
+            </h1>
 
-            <!-- Gerenciar Clientes -->
-            <div id="clients" class="tab-content active">
-                <div class="text-center mb-20">
-                    <button class="btn btn-primary" id="addClientBtn">
-                        <i class="fas fa-user-plus"></i> Adicionar Cliente
-                    </button>
-                    <button class="btn btn-secondary" id="exportClientsBtn">
-                        <i class="fas fa-file-export"></i> Exportar Clientes
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <input type="text" id="searchClients" class="form-control" placeholder="🔍 Buscar clientes..." style="max-width: 400px;" oninput="searchClients()">
+                    <button class="btn btn-primary" onclick="openModal('clientModal')">
+                        <i class="fas fa-plus"></i> Novo Cliente
                     </button>
                 </div>
+
                 <div class="table-responsive">
-                    <table class="table" id="clientsTable">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Nome</th>
                                 <th>CPF</th>
-                                <th>E-mail</th>
-                                <th>Status</th>
-                                <th>Projeto</th>
-                                <th>Último Acesso</th>
+                                <th>Empresa</th>
+                                <th>Email</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="clientsTableBody"></tbody>
+                        <tbody id="clientsTableBody">
+                            <tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
+        </div>
 
-            <!-- Gerenciar Projetos -->
-            <div id="projects" class="tab-content">
-                <div class="text-center mb-20">
-                    <button class="btn btn-primary" id="addProjectBtn">
-                        <i class="fas fa-folder-plus"></i> Adicionar Projeto
+        <!-- PROJECTS SECTION -->
+        <div id="projects" class="section">
+            <h1 class="section-title">
+                <i class="fas fa-project-diagram"></i>
+                Gerenciamento de Projetos
+            </h1>
+
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <input type="text" id="searchProjects" class="form-control" placeholder="🔍 Buscar projetos..." style="max-width: 400px;" oninput="searchProjects()">
+                    <button class="btn btn-primary" onclick="openProjectModal()">
+                        <i class="fas fa-plus"></i> Novo Projeto
                     </button>
                 </div>
+
                 <div class="table-responsive">
-                    <table class="table" id="projectsTable">
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>Nome do Projeto</th>
+                                <th>Título</th>
                                 <th>Cliente</th>
-                                <th>Progresso</th>
                                 <th>Status</th>
-                                <th>Prazo Final</th>
+                                <th>Progresso</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="projectsTableBody"></tbody>
+                        <tbody id="projectsTableBody">
+                            <tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
+        </div>
 
-            <!-- Alertas e Notificações -->
-            <div id="alerts" class="tab-content">
-                <div class="text-center mb-20">
-                    <button class="btn btn-primary" id="addAlertBtn">
-                        <i class="fas fa-bell-plus"></i> Criar Alerta
-                    </button>
-                    <button class="btn btn-secondary" id="sendBulkAlertBtn">
-                        <i class="fas fa-broadcast-tower"></i> Alerta em Massa
+        <!-- DEADLINES SECTION -->
+        <div id="deadlines" class="section">
+            <h1 class="section-title">
+                <i class="fas fa-calendar-check"></i>
+                Gerenciamento de Prazos
+            </h1>
+
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <input type="text" id="searchDeadlines" class="form-control" placeholder="🔍 Buscar prazos..." style="max-width: 400px;" oninput="searchDeadlines()">
+                    <button class="btn btn-primary" onclick="openDeadlineModal()">
+                        <i class="fas fa-plus"></i> Novo Prazo
                     </button>
                 </div>
-                <div id="adminAlertsContainer"></div>
-            </div>
 
-            <!-- Conteúdo Personalizado -->
-            <div id="content" class="tab-content">
-                <div class="glass-card mb-20">
-                    <h3 class="card-title"><i class="fas fa-link"></i> Gerenciar Links</h3>
-                    <div class="text-center mb-20">
-                        <button class="btn btn-primary" id="addLinkBtn">
-                            <i class="fas fa-plus-circle"></i> Adicionar Link
-                        </button>
-                    </div>
-                    <div id="adminLinksContainer"></div>
-                </div>
-                
-                <div class="glass-card">
-                    <h3 class="card-title"><i class="fas fa-file-alt"></i> Gerenciar Orientações</h3>
-                    <div class="text-center mb-20">
-                        <button class="btn btn-primary" id="addOrientationBtn">
-                            <i class="fas fa-plus-circle"></i> Adicionar Orientação
-                        </button>
-                    </div>
-                    <div id="adminOrientationsContainer"></div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Cliente</th>
+                                <th>Data Limite</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deadlinesTableBody">
+                            <tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
 
-            <!-- Configurações -->
-            <div id="settings" class="tab-content">
-                <div class="glass-card mb-20">
-                    <h3 class="card-title"><i class="fas fa-database"></i> Banco de Dados</h3>
-                    <div class="text-center">
-                        <button class="btn btn-secondary" id="backupBtn">
-                            <i class="fas fa-download"></i> Fazer Backup
-                        </button>
-                        <button class="btn btn-outline" id="restoreBtn">
-                            <i class="fas fa-upload"></i> Restaurar Backup
-                        </button>
-                        <button class="btn btn-danger" id="clearDataBtn">
-                            <i class="fas fa-trash"></i> Limpar Dados Locais
-                        </button>
-                    </div>
+        <!-- ALERTS SECTION -->
+        <div id="alerts" class="section">
+            <h1 class="section-title">
+                <i class="fas fa-bell"></i>
+                Gerenciamento de Alertas
+            </h1>
+
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <input type="text" id="searchAlerts" class="form-control" placeholder="🔍 Buscar alertas..." style="max-width: 400px;" oninput="searchAlerts()">
+                    <button class="btn btn-primary" onclick="openAlertModal()">
+                        <i class="fas fa-plus"></i> Novo Alerta
+                    </button>
                 </div>
-                
-                <div class="glass-card">
-                    <h3 class="card-title"><i class="fas fa-sync-alt"></i> Sincronização</h3>
-                    <div id="syncStatus" class="alert">
-                        <i class="fas fa-sync"></i>
-                        <div>
-                            <strong>Sincronização Ativa</strong>
-                            <p>Dados sincronizados com a nuvem em tempo real</p>
-                        </div>
-                    </div>
-                    <div class="text-center">
-                        <button class="btn btn-primary" id="forceSyncBtn">
-                            <i class="fas fa-sync-alt"></i> Forçar Sincronização
-                        </button>
-                    </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertsTableBody">
+                            <tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- LINKS SECTION -->
+        <div id="links" class="section">
+            <h1 class="section-title">
+                <i class="fas fa-link"></i>
+                Gerenciamento de Links
+            </h1>
+
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <input type="text" id="searchLinks" class="form-control" placeholder="🔍 Buscar links..." style="max-width: 400px;" oninput="searchLinks()">
+                    <button class="btn btn-primary" onclick="openLinkModal()">
+                        <i class="fas fa-plus"></i> Novo Link
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Cliente</th>
+                                <th>URL</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="linksTableBody">
+                            <tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SYNC SECTION -->
+        <div id="sync" class="section">
+            <h1 class="section-title">
+                <i class="fas fa-sync-alt"></i>
+                Sincronização com Supabase
+            </h1>
+
+            <div class="glass-card">
+                <h3 style="margin-bottom: 20px;">Configuração do Supabase</h3>
+                <div class="form-group">
+                    <label class="form-label">Supabase URL</label>
+                    <input type="text" id="supabaseUrl" class="form-control" placeholder="https://seu-projeto.supabase.co">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Supabase Anon Key</label>
+                    <input type="text" id="supabaseKey" class="form-control" placeholder="sua-chave-anon-key">
+                </div>
+                <button class="btn btn-primary" onclick="connectSupabase()">
+                    <i class="fas fa-plug"></i> Conectar ao Supabase
+                </button>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="margin-bottom: 20px;">Operações de Sincronização</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="syncAllToSupabase()">
+                        <i class="fas fa-cloud-upload-alt"></i> PUSH - Enviar tudo para Supabase
+                    </button>
+                    <button class="btn btn-secondary" onclick="syncAllFromSupabase()">
+                        <i class="fas fa-cloud-download-alt"></i> PULL - Baixar tudo do Supabase
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="margin-bottom: 20px;">Log de Sincronização</h3>
+                <div class="sync-log" id="syncLog">
+                    <div class="sync-log-entry sync-log-info">Aguardando operações...</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Adicionar/Editar Cliente -->
+    <!-- CLIENT MODAL -->
     <div id="clientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="clientModalTitle">Adicionar Cliente</h2>
-                <button class="modal-close" id="closeClientModal">&times;</button>
+                <h2 class="modal-title">Cadastro de Cliente</h2>
+                <button class="close-btn" onclick="closeModal('clientModal')">&times;</button>
             </div>
-            <div class="modal-body">
-                <form id="clientForm">
-                    <div class="form-group">
-                        <label class="form-label" for="modalClientName">Nome Completo</label>
-                        <input type="text" id="modalClientName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalClientCpf">CPF</label>
-                        <input type="text" id="modalClientCpf" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalClientEmail">E-mail</label>
-                        <input type="email" id="modalClientEmail" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalClientPassword">Senha</label>
-                        <input type="password" id="modalClientPassword" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalClientStatus">Status</label>
-                        <select id="modalClientStatus" class="form-control">
-                            <option value="active">Ativo</option>
-                            <option value="inactive">Inativo</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalClientProject">Projeto Vinculado</label>
-                        <select id="modalClientProject" class="form-control">
-                            <option value="">Nenhum</option>
-                        </select>
-                    </div>
-                    <input type="hidden" id="modalClientId">
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-save"></i> Salvar Cliente
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form id="clientForm" onsubmit="saveClient(event)">
+                <input type="hidden" id="clientId">
+                <div class="form-group">
+                    <label class="form-label">Nome Completo *</label>
+                    <input type="text" id="clientName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CPF *</label>
+                    <input type="text" id="clientCpf" class="form-control" required maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Empresa</label>
+                    <input type="text" id="clientCompany" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="clientEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Telefone</label>
+                    <input type="tel" id="clientPhone" class="form-control">
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('clientModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Modal para Adicionar/Editar Projeto -->
+    <!-- PROJECT MODAL -->
     <div id="projectModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="projectModalTitle">Adicionar Projeto</h2>
-                <button class="modal-close" id="closeProjectModal">&times;</button>
+                <h2 class="modal-title">Cadastro de Projeto</h2>
+                <button class="close-btn" onclick="closeModal('projectModal')">&times;</button>
             </div>
-            <div class="modal-body">
-                <form id="projectForm">
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectName">Nome do Projeto</label>
-                        <input type="text" id="modalProjectName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectClient">Cliente</label>
-                        <select id="modalProjectClient" class="form-control" required>
-                            <option value="">Selecione um cliente</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectDescription">Descrição</label>
-                        <textarea id="modalProjectDescription" class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectProgress">Progresso (%)</label>
-                        <input type="range" id="modalProjectProgress" class="form-control" min="0" max="100" value="0">
-                        <span id="modalProjectProgressValue">0%</span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectStatus">Status</label>
-                        <select id="modalProjectStatus" class="form-control">
-                            <option value="planning">Planejamento</option>
-                            <option value="in_progress">Em Andamento</option>
-                            <option value="review">Em Revisão</option>
-                            <option value="completed">Concluído</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectDeadline">Prazo Final</label>
-                        <input type="date" id="modalProjectDeadline" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalProjectStages">Etapas (uma por linha)</label>
-                        <textarea id="modalProjectStages" class="form-control" rows="5" placeholder="Exemplo:
-1. Briefing
-2. Design
-3. Desenvolvimento
-4. Revisão
-5. Entrega"></textarea>
-                    </div>
-                    <input type="hidden" id="modalProjectId">
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-save"></i> Salvar Projeto
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form id="projectForm" onsubmit="saveProject(event)">
+                <input type="hidden" id="projectId">
+                <div class="form-group">
+                    <label class="form-label">Cliente *</label>
+                    <select id="projectClientId" class="form-control" required>
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Título do Projeto *</label>
+                    <input type="text" id="projectTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="projectDescription" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="projectStatus" class="form-control">
+                        <option value="planning">Planejamento</option>
+                        <option value="in_progress">Em Progresso</option>
+                        <option value="completed">Concluído</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Progresso (%)</label>
+                    <input type="number" id="projectProgress" class="form-control" min="0" max="100" value="0">
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('projectModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Projeto</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Modal para Adicionar Conteúdo -->
-    <div id="contentModal" class="modal">
+    <!-- DEADLINE MODAL -->
+    <div id="deadlineModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="contentModalTitle">Adicionar Conteúdo</h2>
-                <button class="modal-close" id="closeContentModal">&times;</button>
+                <h2 class="modal-title">Cadastro de Prazo</h2>
+                <button class="close-btn" onclick="closeModal('deadlineModal')">&times;</button>
             </div>
-            <div class="modal-body">
-                <form id="contentForm">
-                    <div class="form-group">
-                        <label class="form-label" for="modalContentType">Tipo de Conteúdo</label>
-                        <select id="modalContentType" class="form-control">
-                            <option value="link">Link</option>
-                            <option value="orientation">Orientação</option>
-                            <option value="alert">Alerta</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalContentTitle">Título</label>
-                        <input type="text" id="modalContentTitle" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalContentDescription">Descrição</label>
-                        <textarea id="modalContentDescription" class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="form-group" id="modalContentUrlGroup">
-                        <label class="form-label" for="modalContentUrl">URL/Link</label>
-                        <input type="url" id="modalContentUrl" class="form-control">
-                    </div>
-                    <div class="form-group" id="modalContentIconGroup">
-                        <label class="form-label" for="modalContentIcon">Ícone (FontAwesome)</label>
-                        <input type="text" id="modalContentIcon" class="form-control" placeholder="Ex: fas fa-link">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalContentClient">Cliente (deixe vazio para todos)</label>
-                        <select id="modalContentClient" class="form-control">
-                            <option value="">Todos os Clientes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="modalContentStatus">Status</label>
-                        <select id="modalContentStatus" class="form-control">
-                            <option value="active">Ativo</option>
-                            <option value="inactive">Inativo</option>
-                        </select>
-                    </div>
-                    <input type="hidden" id="modalContentId">
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-save"></i> Salvar Conteúdo
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form id="deadlineForm" onsubmit="saveDeadline(event)">
+                <input type="hidden" id="deadlineId">
+                <div class="form-group">
+                    <label class="form-label">Cliente *</label>
+                    <select id="deadlineClientId" class="form-control" required>
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Título *</label>
+                    <input type="text" id="deadlineTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="deadlineDescription" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data Limite *</label>
+                    <input type="date" id="deadlineDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="deadlineStatus" class="form-control">
+                        <option value="pendente">Pendente</option>
+                        <option value="em_andamento">Em Andamento</option>
+                        <option value="concluido">Concluído</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('deadlineModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Prazo</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Modal Alerta em Massa -->
-    <div id="bulkAlertModal" class="modal">
+    <!-- ALERT MODAL -->
+    <div id="alertModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-broadcast-tower"></i> Alerta em Massa</h2>
-                <button class="modal-close" id="closeBulkAlertModal">&times;</button>
+                <h2 class="modal-title">Cadastro de Alerta</h2>
+                <button class="close-btn" onclick="closeModal('alertModal')">&times;</button>
             </div>
-            <div class="modal-body">
-                <form id="bulkAlertForm">
-                    <div class="form-group">
-                        <label class="form-label" for="bulkAlertTitle">Título do Alerta</label>
-                        <input type="text" id="bulkAlertTitle" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="bulkAlertMessage">Mensagem</label>
-                        <textarea id="bulkAlertMessage" class="form-control" rows="4" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="bulkAlertType">Tipo</label>
-                        <select id="bulkAlertType" class="form-control">
-                            <option value="info">Informação</option>
-                            <option value="warning">Aviso</option>
-                            <option value="danger">Urgente</option>
-                            <option value="success">Sucesso</option>
-                        </select>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-paper-plane"></i> Enviar para Todos os Clientes
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form id="alertForm" onsubmit="saveAlert(event)">
+                <input type="hidden" id="alertId">
+                <div class="form-group">
+                    <label class="form-label">Cliente *</label>
+                    <select id="alertClientId" class="form-control" required>
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Título *</label>
+                    <input type="text" id="alertTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mensagem</label>
+                    <textarea id="alertMessage" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    <select id="alertType" class="form-control">
+                        <option value="info">Informação</option>
+                        <option value="warning">Aviso</option>
+                        <option value="error">Erro</option>
+                        <option value="success">Sucesso</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('alertModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alerta</button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <!-- LINK MODAL -->
+    <div id="linkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Cadastro de Link</h2>
+                <button class="close-btn" onclick="closeModal('linkModal')">&times;</button>
+            </div>
+            <form id="linkForm" onsubmit="saveLink(event)">
+                <input type="hidden" id="linkId">
+                <div class="form-group">
+                    <label class="form-label">Cliente *</label>
+                    <select id="linkClientId" class="form-control" required>
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Título *</label>
+                    <input type="text" id="linkTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">URL *</label>
+                    <input type="url" id="linkUrl" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="linkDescription" class="form-control"></textarea>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('linkModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast"></div>
 
     <script>
-        // Sistema Administrativo LG Plataforma
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configuração do IndexedDB
-            const DB_NAME = 'portallegacy';
-            const DB_VERSION = 5;
-            
-            // Stores do banco de dados
-            const STORES = {
-                CLIENTS: 'clients',
-                PROJECTS: 'projects',
-                LINKS: 'links',
-                ORIENTATIONS: 'orientations',
-                DEADLINES: 'deadlines',
-                ALERTS: 'alerts',
-                FILES: 'files',
-                ACCESSES: 'accesses',
-                ADMIN: 'admin',
-                SETTINGS: 'settings'
-            };
-            
-            let db = null;
-            let currentUser = null;
-            
-                   
-            // Inicialização do sistema
-            initSystem();
-            
-            // Função para inicializar o sistema
-            async function initSystem() {
-                try {
-                    await initDatabase();
-                    setupEventListeners();
-                    checkAutoLogin();
-                } catch (error) {
-                    console.error('Erro ao inicializar o sistema:', error);
-                    showMessage('Erro ao inicializar o sistema. Por favor, recarregue a página.', 'danger');
-                }
-            }
-            
-            // Inicializar o banco de dados IndexedDB
-            function initDatabase() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(DB_NAME, DB_VERSION);
-                    
-                    request.onerror = (event) => {
-                        console.error('Erro ao abrir o banco de dados:', event.target.error);
-                        reject(event.target.error);
-                    };
-                    
-                    request.onsuccess = (event) => {
-                        db = event.target.result;
-                        console.log('Banco de dados inicializado com sucesso');
-                        resolve();
-                    };               
-                                         
+// ==================== INDEXEDDB CONFIGURATION ====================
+const DB_NAME = 'LGAdminDB';
+const DB_VERSION = 1;
+let db;
 
-                    request.onupgradeneeded = (event) => {
-                        const database = event.target.result;
-                        
-                        console.log('Criando/atualizando banco de dados');
+const STORES = {
+    clients: 'clients',
+    projects: 'projects',
+    deadlines: 'deadlines',
+    alerts: 'alerts',
+    links: 'links'
+};
 
+const SUPABASE_TABLES = {
+    clients: 'clientes',
+    projects: 'projetos',
+    deadlines: 'prazos',
+    alerts: 'alertas',
+    links: 'links'
+};
 
-                 (function patchIndexedDB() {
-    const originalOpen = indexedDB.open;
+let supabaseClient = null;
 
-    indexedDB.open = function (...args) {
-        const request = originalOpen.apply(this, args);
+function initDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-        request.addEventListener('success', () => {
-            const db = request.result;
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            db = request.result;
+            resolve(db);
+        };
 
-            const originalTransaction = db.transaction.bind(db);
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
 
-            db.transaction = function (storeNames, mode) {
-                const tx = originalTransaction(storeNames, mode);
+            if (!db.objectStoreNames.contains(STORES.clients)) {
+                const clientStore = db.createObjectStore(STORES.clients, { keyPath: 'id', autoIncrement: true });
+                clientStore.createIndex('cpf', 'cpf', { unique: true });
+                clientStore.createIndex('email', 'email', { unique: false });
+            }
 
-                tx.oncomplete = () => {
-                    storeNames = Array.isArray(storeNames) ? storeNames : [storeNames];
+            if (!db.objectStoreNames.contains(STORES.projects)) {
+                const projectStore = db.createObjectStore(STORES.projects, { keyPath: 'id', autoIncrement: true });
+                projectStore.createIndex('cliente_id', 'cliente_id', { unique: false });
+            }
 
-                    storeNames.forEach(async (storeName) => {
-                        if (!STORE_TABLE_MAP[storeName]) return;
+            if (!db.objectStoreNames.contains(STORES.deadlines)) {
+                const deadlineStore = db.createObjectStore(STORES.deadlines, { keyPath: 'id', autoIncrement: true });
+                deadlineStore.createIndex('cliente_id', 'cliente_id', { unique: false });
+            }
 
-                        const store = tx.objectStore(storeName);
-                        const all = store.getAll();
+            if (!db.objectStoreNames.contains(STORES.alerts)) {
+                const alertStore = db.createObjectStore(STORES.alerts, { keyPath: 'id', autoIncrement: true });
+                alertStore.createIndex('cliente_id', 'cliente_id', { unique: false });
+            }
 
-                        all.onsuccess = async () => {
-                            for (const record of all.result) {
-                                await window.supabaseClient
-                                    .from(STORE_TABLE_MAP[storeName])
-                                    .upsert({
-                                        ...record,
-                                        user_id: (await window.supabaseClient.auth.getUser()).data.user.id,
-                                        updated_at: new Date().toISOString()
-                                    }, { onConflict: 'id' });
-                            }
-                        };
-                    });
-                };
+            if (!db.objectStoreNames.contains(STORES.links)) {
+                const linkStore = db.createObjectStore(STORES.links, { keyPath: 'id', autoIncrement: true });
+                linkStore.createIndex('cliente_id', 'cliente_id', { unique: false });
+            }
+        };
+    });
+}
 
-                return tx;
-            };
-        });
+function addRecord(storeName, data) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.add(data);
 
-        return request;
-    };
-})();
-                        
-                        // Criar todas as stores se não existirem
-                        const storeNames = database.objectStoreNames;
-                        
-                        if (!storeNames.contains(STORES.CLIENTS)) {
-                            database.createObjectStore(STORES.CLIENTS, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.PROJECTS)) {
-                            database.createObjectStore(STORES.PROJECTS, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.LINKS)) {
-                            database.createObjectStore(STORES.LINKS, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.ORIENTATIONS)) {
-                            database.createObjectStore(STORES.ORIENTATIONS, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.ALERTS)) {
-                            database.createObjectStore(STORES.ALERTS, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.FILES)) {
-                            database.createObjectStore(STORES.FILES, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.ACCESSES)) {
-                            database.createObjectStore(STORES.ACCESSES, { keyPath: 'id', autoIncrement: true });
-                        }
-                        
-                        if (!storeNames.contains(STORES.SETTINGS)) {
-                            database.createObjectStore(STORES.SETTINGS, { keyPath: 'id', autoIncrement: true });
-                        }
-                       
-                        if (!storeNames.contains(STORES.DEADLINES)) {
-                           database.createObjectStore(STORES.DEADLINES, { keyPath: 'id', autoIncrement: true });
-                        }
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
 
-                        if (!storeNames.contains(STORES.ADMIN)) {
-                        database.createObjectStore(STORES.ADMIN, { keyPath: 'id', autoIncrement: true });
-                        }
-                    };
-                });
-            }
-            
-            // Configurar ouvintes de eventos
-            function setupEventListeners() {
-                // Login
-                document.getElementById('adminLoginForm').addEventListener('submit', handleAdminLogin);
-                
-                // Logout
-                document.getElementById('adminLogout').addEventListener('click', logout);
-                
-                // Tabs do admin
-                document.querySelectorAll('#adminTabs .tab').forEach(tab => {
-                    tab.addEventListener('click', switchAdminTab);
-                });
-                
-                // Botões do admin
-                document.getElementById('addClientBtn').addEventListener('click', () => openClientModal());
-                document.getElementById('addProjectBtn').addEventListener('click', () => openProjectModal());
-                document.getElementById('addAlertBtn').addEventListener('click', () => openContentModal('alert'));
-                document.getElementById('addLinkBtn').addEventListener('click', () => openContentModal('link'));
-                document.getElementById('addOrientationBtn').addEventListener('click', () => openContentModal('orientation'));
-                document.getElementById('sendBulkAlertBtn').addEventListener('click', openBulkAlertModal);
-                document.getElementById('exportClientsBtn').addEventListener('click', exportClients);
-                document.getElementById('forceSyncBtn').addEventListener('click', forceSync);
-                document.getElementById('clearDataBtn').addEventListener('click', clearLocalData);
-                document.getElementById('backupBtn').addEventListener('click', backupData);
-                
-                // Modais
-                document.getElementById('closeClientModal').addEventListener('click', () => closeModal('clientModal'));
-                document.getElementById('closeProjectModal').addEventListener('click', () => closeModal('projectModal'));
-                document.getElementById('closeContentModal').addEventListener('click', () => closeModal('contentModal'));
-                document.getElementById('closeBulkAlertModal').addEventListener('click', () => closeModal('bulkAlertModal'));
-                
-                // Formulários modais
-                document.getElementById('clientForm').addEventListener('submit', handleClientFormSubmit);
-                document.getElementById('projectForm').addEventListener('submit', handleProjectFormSubmit);
-                document.getElementById('contentForm').addEventListener('submit', handleContentFormSubmit);
-                document.getElementById('bulkAlertForm').addEventListener('submit', handleBulkAlertSubmit);
-                
-                // Alterar tipo de conteúdo no modal
-                document.getElementById('modalContentType').addEventListener('change', updateContentModalFields);
-                
-                // Atualizar valor do progresso do projeto
-                document.getElementById('modalProjectProgress').addEventListener('input', function() {
-                    document.getElementById('modalProjectProgressValue').textContent = this.value + '%';
-                });
-            }
-            
-            // Funções de navegação
-            function showLoginScreen() {
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('adminArea').classList.add('hidden');
-                resetLoginForm();
-            }
-            
-            function showAdminArea() {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('adminArea').classList.remove('hidden');
-                loadAdminData();
-            }
-            
-            // Funções de login
-            async function handleAdminLogin(e) {
-                e.preventDefault();
-                const email = document.getElementById('adminEmail').value;
-                const password = document.getElementById('adminPassword').value;
-                
-                try {
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-                    
-                    if (error) throw error;
-                    
-                    // Login bem-sucedido
-                    currentUser = {
-                        id: data.user.id,
-                        email: data.user.email,
-                        nome: data.user.user_metadata?.name || 'Administrador',
-                        criadoEm: data.user.created_at
-                    };
-                    
-                    // Atualizar informações do usuário
-                    document.getElementById('adminName').textContent = currentUser.nome;
-                    document.getElementById('adminEmailDisplay').textContent = currentUser.email;
-                    document.getElementById('adminAvatar').textContent = getInitials(currentUser.nome);
-                    
-                    // Salvar sessão
-                    localStorage.setItem('lg_admin_session', JSON.stringify({
-                        id: currentUser.id,
-                        email: currentUser.email,
-                        timestamp: new Date().getTime()
-                    }));
-                    
-                    showAdminArea();
-                } catch (error) {
-                    console.error('Erro no login:', error);
-                    showLoginMessage('Credenciais inválidas ou erro de conexão', 'danger');
-                }
-            }
-            
-            async function checkAutoLogin() {
-                // Verificar se há sessão ativa no Supabase
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        const user = session.user;
-                        currentUser = {
-                            id: user.id,
-                            email: user.email,
-                            nome: user.user_metadata?.name || 'Administrador',
-                            criadoEm: user.created_at
-                        };
-                        
-                        document.getElementById('adminName').textContent = currentUser.nome;
-                        document.getElementById('adminEmailDisplay').textContent = currentUser.email;
-                        document.getElementById('adminAvatar').textContent = getInitials(currentUser.nome);
-                        
-                        showAdminArea();
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Erro ao verificar sessão:', error);
-                }
-                
-                // Verificar se há sessão local
-                const adminSession = localStorage.getItem('lg_admin_session');
-                if (adminSession) {
-                    try {
-                        const session = JSON.parse(adminSession);
-                        // Verificar se a sessão expirou (24 horas)
-                        if (new Date().getTime() - session.timestamp < 24 * 60 * 60 * 1000) {
-                            // Tentar restaurar sessão do Supabase
-                            try {
-                                const { data: { session: supabaseSession } } = await supabase.auth.getSession();
-                                if (supabaseSession && supabaseSession.user.email === session.email) {
-                                    const user = supabaseSession.user;
-                                    currentUser = {
-                                        id: user.id,
-                                        email: user.email,
-                                        nome: user.user_metadata?.name || 'Administrador',
-                                        criadoEm: user.created_at
-                                    };
-                                    
-                                    document.getElementById('adminName').textContent = currentUser.nome;
-                                    document.getElementById('adminEmailDisplay').textContent = currentUser.email;
-                                    document.getElementById('adminAvatar').textContent = getInitials(currentUser.nome);
-                                    
-                                    showAdminArea();
-                                }
-                            } catch (error) {
-                                console.error('Erro ao restaurar sessão:', error);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Erro ao analisar sessão:', error);
-                    }
-                }
-            }
-            
-            function logout() {
-                supabase.auth.signOut();
-                currentUser = null;
-                localStorage.removeItem('lg_admin_session');
-                showLoginScreen();
-            }
-            
-            // Funções para carregar dados
-            async function loadAdminData() {
-                try {
-                    // Carregar estatísticas
-                    const clientes = await getAllClients();
-                    const projetos = await getAllProjects();
-                    const alertas = await getAllAlerts();
-                    const prazos = await getAllDeadlines();
-                    
-                    // Atualizar contadores
-                    const activeClients = clientes.filter(c => c.status === 'active').length;
-                    const activeProjects = projetos.filter(p => p.status !== 'completed').length;
-                    const activeAlerts = alertas.filter(a => a.status === 'active').length;
-                    
-                    const today = new Date().toISOString().split('T')[0];
-                    const todayDeadlines = prazos.filter(p => p.data === today && p.status !== 'concluido').length;
-                    
-                    document.getElementById('activeClientsCount').textContent = activeClients;
-                    document.getElementById('activeProjectsCount').textContent = activeProjects;
-                    document.getElementById('todayDeadlinesCount').textContent = todayDeadlines;
-                    document.getElementById('activeAlertsCount').textContent = activeAlerts;
-                    
-                    // Carregar tabela de clientes
-                    await loadClientsTable();
-                    
-                    // Carregar tabela de projetos
-                    await loadProjectsTable();
-                    
-                    // Carregar alertas do admin
-                    await loadAdminAlerts();
-                    
-                    // Carregar links do admin
-                    await loadAdminLinks();
-                    
-                    // Carregar orientações do admin
-                    await loadAdminOrientations();
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                    showMessage('Erro ao carregar dados administrativos.', 'danger');
-                }
-            }
-            
-            async function loadClientsTable() {
-                try {
-                    const clients = await getAllClients();
-                    const projetos = await getAllProjects();
-                    const container = document.getElementById('clientsTableBody');
-                    
-                    if (clients.length === 0) {
-                        container.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum cliente cadastrado</td></tr>';
-                        return;
-                    }
-                    
-                    container.innerHTML = clients.map(client => {
-                        const projeto = projetos.find(p => p.id === client.projetoId);
-                        const lastAccess = client.ultimoAcesso ? formatDate(client.ultimoAcesso) : 'Nunca acessou';
-                        
-                        return `
-                            <tr>
-                                <td>${client.nome}</td>
-                                <td>${formatCpf(client.cpf)}</td>
-                                <td>${client.email || 'N/A'}</td>
-                                <td>
-                                    <span class="status-indicator">
-                                        <span class="status-dot ${client.status}"></span>
-                                        ${client.status === 'active' ? 'Ativo' : 'Inativo'}
-                                    </span>
-                                </td>
-                                <td>${projeto ? projeto.nome : 'Nenhum'}</td>
-                                <td>${lastAccess}</td>
-                                <td>
-                                    <button class="btn btn-outline" onclick="editClient(${client.id})" style="padding: 6px 12px; font-size: 14px;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline" onclick="toggleClientStatus(${client.id}, '${client.status}')" style="padding: 6px 12px; font-size: 14px;">
-                                        <i class="fas fa-${client.status === 'active' ? 'ban' : 'check'}"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                } catch (error) {
-                    console.error('Erro ao carregar tabela de clientes:', error);
-                    showMessage('Erro ao carregar clientes', 'danger');
-                }
-            }
-            
-            async function loadProjectsTable() {
-                try {
-                    const projects = await getAllProjects();
-                    const clients = await getAllClients();
-                    const container = document.getElementById('projectsTableBody');
-                    
-                    if (projects.length === 0) {
-                        container.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum projeto cadastrado</td></tr>';
-                        return;
-                    }
-                    
-                    container.innerHTML = projects.map(project => {
-                        const client = clients.find(c => c.id === project.clienteId);
-                        const statusText = {
-                            'planning': 'Planejamento',
-                            'in_progress': 'Em Andamento',
-                            'review': 'Em Revisão',
-                            'completed': 'Concluído'
-                        };
-                        
-                        return `
-                            <tr>
-                                <td>${project.nome}</td>
-                                <td>${client ? client.nome : 'Cliente não encontrado'}</td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <div class="progress-bar" style="height: 8px; flex: 1; background: rgba(100, 100, 150, 0.2); border-radius: 4px; overflow: hidden;">
-                                            <div class="progress-fill" style="width: ${project.progresso}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary));"></div>
-                                        </div>
-                                        <span>${project.progresso}%</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge ${getProjectStatusBadge(project.status)}">
-                                        ${statusText[project.status] || project.status}
-                                    </span>
-                                </td>
-                                <td>${project.prazoFinal ? formatDate(project.prazoFinal) : 'Não definido'}</td>
-                                <td>
-                                    <button class="btn btn-outline" onclick="editProject(${project.id})" style="padding: 6px 12px; font-size: 14px;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline" onclick="deleteProject(${project.id})" style="padding: 6px 12px; font-size: 14px;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                } catch (error) {
-                    console.error('Erro ao carregar tabela de projetos:', error);
-                    showMessage('Erro ao carregar projetos', 'danger');
-                }
-            }
-            
-            async function loadAdminAlerts() {
-                try {
-                    const alerts = await getAllAlerts();
-                    const container = document.getElementById('adminAlertsContainer');
-                    
-                    if (alerts.length === 0) {
-                        container.innerHTML = '<div class="alert"><i class="fas fa-info-circle"></i> Nenhum alerta criado.</div>';
-                        return;
-                    }
-                    
-                    container.innerHTML = alerts.map(alert => {
-                        const client = alert.clienteId ? 'Cliente específico' : 'Todos os clientes';
-                        const alertTypeClass = {
-                            'info': '',
-                            'warning': 'alert-warning',
-                            'danger': 'alert-danger',
-                            'success': 'alert-success'
-                        }[alert.tipo] || '';
-                        
-                        return `
-                            <div class="glass-card mb-20">
-                                <div style="display: flex; justify-content: space-between; align-items: start;">
-                                    <div>
-                                        <h4><i class="${alert.icone || getAlertIcon(alert.tipo)}"></i> ${alert.titulo}</h4>
-                                        <p>${alert.descricao}</p>
-                                        <small>Para: ${client} • Criado em: ${formatDate(alert.criadoEm)}</small>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-outline" onclick="editContent(${alert.id}, 'alert')" style="padding: 6px 12px; font-size: 14px;">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline" onclick="toggleContentStatus(${alert.id}, 'alert')" style="padding: 6px 12px; font-size: 14px;">
-                                            <i class="fas fa-${alert.status === 'active' ? 'ban' : 'check'}"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                } catch (error) {
-                    console.error('Erro ao carregar alertas:', error);
-                }
-            }
-            
-            async function loadAdminLinks() {
-                try {
-                    const links = await getAllLinks();
-                    const container = document.getElementById('adminLinksContainer');
-                    
-                    if (links.length === 0) {
-                        container.innerHTML = '<p class="text-center">Nenhum link criado.</p>';
-                        return;
-                    }
-                    
-                    container.innerHTML = links.map(link => {
-                        const client = link.clienteId ? 'Cliente específico' : 'Todos os clientes';
-                        
-                        return `
-                            <div class="list-item">
-                                <div class="list-icon">
-                                    <i class="${link.icone || 'fas fa-link'}"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <strong>${link.titulo}</strong>
-                                    <p>${link.descricao || ''}</p>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <small>${client} • URL: ${link.url ? link.url.substring(0, 50) + '...' : 'N/A'}</small>
-                                        <span class="badge ${link.status === 'active' ? 'badge-success' : 'badge-danger'}">
-                                            ${link.status === 'active' ? 'Ativo' : 'Inativo'}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline" onclick="editContent(${link.id}, 'link')" style="padding: 6px 12px; font-size: 14px;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline" onclick="toggleContentStatus(${link.id}, 'link')" style="padding: 6px 12px; font-size: 14px;">
-                                        <i class="fas fa-${link.status === 'active' ? 'ban' : 'check'}"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                } catch (error) {
-                    console.error('Erro ao carregar links:', error);
-                }
-            }
-            
-            async function loadAdminOrientations() {
-                try {
-                    const orientations = await getAllOrientations();
-                    const container = document.getElementById('adminOrientationsContainer');
-                    
-                    if (orientations.length === 0) {
-                        container.innerHTML = '<p class="text-center">Nenhuma orientação criada.</p>';
-                        return;
-                    }
-                    
-                    container.innerHTML = orientations.map(orientation => {
-                        const client = orientation.clienteId ? 'Cliente específico' : 'Todos os clientes';
-                        
-                        return `
-                            <div class="glass-card mb-20">
-                                <div style="display: flex; justify-content: space-between; align-items: start;">
-                                    <div>
-                                        <h4><i class="${orientation.icone || 'fas fa-info-circle'}"></i> ${orientation.titulo}</h4>
-                                        <p>${orientation.descricao}</p>
-                                        ${orientation.conteudo ? `<div style="margin-top: 10px;">${orientation.conteudo}</div>` : ''}
-                                        <small>Para: ${client} • Atualizado em: ${formatDate(orientation.atualizadoEm)}</small>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-outline" onclick="editContent(${orientation.id}, 'orientation')" style="padding: 6px 12px; font-size: 14px;">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline" onclick="toggleContentStatus(${orientation.id}, 'orientation')" style="padding: 6px 12px; font-size: 14px;">
-                                            <i class="fas fa-${orientation.status === 'active' ? 'ban' : 'check'}"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                } catch (error) {
-                    console.error('Erro ao carregar orientações:', error);
-                }
-            }
-            
-            // Funções dos modais
-            async function openClientModal(clientId = null) {
-                try {
-                    const modal = document.getElementById('clientModal');
-                    const title = document.getElementById('clientModalTitle');
-                    const form = document.getElementById('clientForm');
-                    
-                    form.reset();
-                    
-                    const projects = await getAllProjects();
-                    const projectSelect = document.getElementById('modalClientProject');
-                    projectSelect.innerHTML = '<option value="">Nenhum</option>' + 
-                        projects.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
-                    
-                    if (clientId) {
-                        title.textContent = 'Editar Cliente';
-                        const client = await getClientById(clientId);
-                        
-                        if (client) {
-                            document.getElementById('modalClientId').value = client.id;
-                            document.getElementById('modalClientName').value = client.nome;
-                            document.getElementById('modalClientCpf').value = client.cpf;
-                            document.getElementById('modalClientEmail').value = client.email || '';
-                            document.getElementById('modalClientPassword').value = client.senha || '';
-                            document.getElementById('modalClientStatus').value = client.status;
-                            document.getElementById('modalClientProject').value = client.projetoId || '';
-                        }
-                    } else {
-                        title.textContent = 'Adicionar Cliente';
-                        document.getElementById('modalClientId').value = '';
-                        document.getElementById('modalClientPassword').value = generatePassword();
-                    }
-                    
-                    modal.classList.add('active');
-                } catch (error) {
-                    console.error('Erro ao abrir modal de cliente:', error);
-                    showMessage('Erro ao abrir formulário de cliente.', 'danger');
-                }
-            }
-            
-            async function openProjectModal(projectId = null) {
-                try {
-                    const modal = document.getElementById('projectModal');
-                    const title = document.getElementById('projectModalTitle');
-                    const form = document.getElementById('projectForm');
-                    
-                    form.reset();
-                    
-                    const clients = await getAllClients();
-                    const clientSelect = document.getElementById('modalProjectClient');
-                    clientSelect.innerHTML = '<option value="">Selecione um cliente</option>' + 
-                        clients.map(c => `<option value="${c.id}">${c.nome} (${formatCpf(c.cpf)})</option>`).join('');
-                    
-                    if (projectId) {
-                        title.textContent = 'Editar Projeto';
-                        const project = await getProjectById(projectId);
-                        
-                        if (project) {
-                            document.getElementById('modalProjectId').value = project.id;
-                            document.getElementById('modalProjectName').value = project.nome;
-                            document.getElementById('modalProjectClient').value = project.clienteId;
-                            document.getElementById('modalProjectDescription').value = project.descricao || '';
-                            document.getElementById('modalProjectProgress').value = project.progresso;
-                            document.getElementById('modalProjectProgressValue').textContent = project.progresso + '%';
-                            document.getElementById('modalProjectStatus').value = project.status;
-                            document.getElementById('modalProjectDeadline').value = project.prazoFinal || '';
-                            document.getElementById('modalProjectStages').value = project.etapas ? project.etapas.join('\n') : '';
-                        }
-                    } else {
-                        title.textContent = 'Adicionar Projeto';
-                        document.getElementById('modalProjectId').value = '';
-                        document.getElementById('modalProjectProgressValue').textContent = '0%';
-                    }
-                    
-                    modal.classList.add('active');
-                } catch (error) {
-                    console.error('Erro ao abrir modal de projeto:', error);
-                    showMessage('Erro ao abrir formulário de projeto.', 'danger');
-                }
-            }
-            
-            async function openContentModal(contentType = 'link', contentId = null) {
-                try {
-                    const modal = document.getElementById('contentModal');
-                    const title = document.getElementById('contentModalTitle');
-                    const form = document.getElementById('contentForm');
-                    const typeSelect = document.getElementById('modalContentType');
-                    
-                    form.reset();
-                    
-                    typeSelect.value = contentType;
-                    updateContentModalFields();
-                    
-                    const clients = await getAllClients();
-                    const clientSelect = document.getElementById('modalContentClient');
-                    clientSelect.innerHTML = '<option value="">Todos os Clientes</option>' + 
-                        clients.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
-                    
-                    if (contentId) {
-                        title.textContent = 'Editar Conteúdo';
-                        
-                        let content;
-                        switch(contentType) {
-                            case 'link':
-                                content = await getLinkById(contentId);
-                                break;
-                            case 'orientation':
-                                content = await getOrientationById(contentId);
-                                break;
-                            case 'alert':
-                                content = await getAlertById(contentId);
-                                break;
-                        }
-                        
-                        if (content) {
-                            document.getElementById('modalContentId').value = content.id;
-                            document.getElementById('modalContentTitle').value = content.titulo;
-                            document.getElementById('modalContentDescription').value = content.descricao || '';
-                            document.getElementById('modalContentUrl').value = content.url || '';
-                            document.getElementById('modalContentIcon').value = content.icone || '';
-                            document.getElementById('modalContentClient').value = content.clienteId || '';
-                            document.getElementById('modalContentStatus').value = content.status || 'active';
-                        }
-                    } else {
-                        title.textContent = 'Adicionar Conteúdo';
-                        document.getElementById('modalContentId').value = '';
-                        
-                        const defaultIcons = {
-                            'link': 'fas fa-link',
-                            'orientation': 'fas fa-info-circle',
-                            'alert': 'fas fa-bell'
-                        };
-                        
-                        document.getElementById('modalContentIcon').value = defaultIcons[contentType] || 'fas fa-question-circle';
-                    }
-                    
-                    modal.classList.add('active');
-                } catch (error) {
-                    console.error('Erro ao abrir modal de conteúdo:', error);
-                    showMessage('Erro ao abrir formulário de conteúdo.', 'danger');
-                }
-            }
-            
-            function openBulkAlertModal() {
-                document.getElementById('bulkAlertModal').classList.add('active');
-            }
-            
-            function updateContentModalFields() {
-                const type = document.getElementById('modalContentType').value;
-                const urlGroup = document.getElementById('modalContentUrlGroup');
-                const iconGroup = document.getElementById('modalContentIconGroup');
-                
-                if (type === 'link') {
-                    urlGroup.style.display = 'block';
-                    iconGroup.style.display = 'block';
-                } else {
-                    urlGroup.style.display = 'none';
-                    iconGroup.style.display = 'block';
-                }
-            }
-            
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.remove('active');
-            }
-            
-            // Funções dos formulários
-            async function handleClientFormSubmit(e) {
-                e.preventDefault();
-                
-                const clientData = {
-                    nome: document.getElementById('modalClientName').value,
-                    cpf: document.getElementById('modalClientCpf').value,
-                    email: document.getElementById('modalClientEmail').value,
-                    senha: document.getElementById('modalClientPassword').value,
-                    status: document.getElementById('modalClientStatus').value,
-                    projetoId: document.getElementById('modalClientProject').value || null,
-                    criadoEm: new Date().toISOString(),
-                    ultimoAcesso: null
-                };
-                
-                const clientId = document.getElementById('modalClientId').value;
-                
-                try {
-                    if (clientId) {
-                        const existingClient = await getClientById(parseInt(clientId));
-                        if (existingClient) {
-                            clientData.id = parseInt(clientId);
-                            clientData.criadoEm = existingClient.criadoEm;
-                            await updateClient(clientData);
-                            showMessage('Cliente atualizado com sucesso!', 'success');
-                        }
-                    } else {
-                        await addClient(clientData);
-                        showMessage('Cliente adicionado com sucesso!', 'success');
-                    }
-                    
-                    closeModal('clientModal');
-                    await loadAdminData();
-                    
-                } catch (error) {
-                    showMessage(`Erro: ${error.message}`, 'danger');
-                }
-            }
-            
-            async function handleProjectFormSubmit(e) {
-                e.preventDefault();
-                
-                const stagesText = document.getElementById('modalProjectStages').value;
-                const stages = stagesText.split('\n').filter(stage => stage.trim() !== '');
-                
-                const projectData = {
-                    nome: document.getElementById('modalProjectName').value,
-                    clienteId: parseInt(document.getElementById('modalProjectClient').value),
-                    descricao: document.getElementById('modalProjectDescription').value,
-                    progresso: parseInt(document.getElementById('modalProjectProgress').value),
-                    status: document.getElementById('modalProjectStatus').value,
-                    prazoFinal: document.getElementById('modalProjectDeadline').value || null,
-                    etapas: stages,
-                    dataInicio: new Date().toISOString()
-                };
-                
-                const projectId = document.getElementById('modalProjectId').value;
-                
-                try {
-                    if (projectId) {
-                        const existingProject = await getProjectById(parseInt(projectId));
-                        if (existingProject) {
-                            projectData.id = parseInt(projectId);
-                            projectData.dataInicio = existingProject.dataInicio;
-                            await updateProject(projectData);
-                            showMessage('Projeto atualizado com sucesso!', 'success');
-                        }
-                    } else {
-                        await addProject(projectData);
-                        showMessage('Projeto adicionado com sucesso!', 'success');
-                    }
-                    
-                    closeModal('projectModal');
-                    await loadAdminData();
-                    
-                } catch (error) {
-                    showMessage(`Erro: ${error.message}`, 'danger');
-                }
-            }
-            
-            async function handleContentFormSubmit(e) {
-                e.preventDefault();
-                
-                const type = document.getElementById('modalContentType').value;
-                const contentId = document.getElementById('modalContentId').value;
-                
-                const contentData = {
-                    titulo: document.getElementById('modalContentTitle').value,
-                    descricao: document.getElementById('modalContentDescription').value,
-                    icone: document.getElementById('modalContentIcon').value,
-                    clienteId: document.getElementById('modalContentClient').value || null,
-                    status: document.getElementById('modalContentStatus').value,
-                    criadoEm: new Date().toISOString(),
-                    atualizadoEm: new Date().toISOString()
-                };
-                
-                if (type === 'link') {
-                    contentData.url = document.getElementById('modalContentUrl').value;
-                }
-                
-                if (type === 'alert') {
-                    contentData.tipo = 'info';
-                    contentData.data = new Date().toISOString();
-                }
-                
-                try {
-                    if (contentId) {
-                        contentData.id = parseInt(contentId);
-                        
-                        switch(type) {
-                            case 'link':
-                                await updateLink(contentData);
-                                break;
-                            case 'orientation':
-                                await updateOrientation(contentData);
-                                break;
-                            case 'alert':
-                                await updateAlert(contentData);
-                                break;
-                        }
-                        
-                        showMessage('Conteúdo atualizado com sucesso!', 'success');
-                    } else {
-                        switch(type) {
-                            case 'link':
-                                await addLink(contentData);
-                                break;
-                            case 'orientation':
-                                await addOrientation(contentData);
-                                break;
-                            case 'alert':
-                                await addAlert(contentData);
-                                break;
-                        }
-                        
-                        showMessage('Conteúdo adicionado com sucesso!', 'success');
-                    }
-                    
-                    closeModal('contentModal');
-                    await loadAdminData();
-                    
-                } catch (error) {
-                    showMessage(`Erro: ${error.message}`, 'danger');
-                }
-            }
-            
-            async function handleBulkAlertSubmit(e) {
-                e.preventDefault();
-                
-                const title = document.getElementById('bulkAlertTitle').value;
-                const message = document.getElementById('bulkAlertMessage').value;
-                const type = document.getElementById('bulkAlertType').value;
-                
-                try {
-                    const clients = await getAllClients();
-                    
-                    for (const client of clients) {
-                        if (client.status === 'active') {
-                            const alertData = {
-                                titulo: title,
-                                descricao: message,
-                                tipo: type,
-                                clienteId: client.id,
-                                icone: getAlertIcon(type),
-                                status: 'active',
-                                criadoEm: new Date().toISOString(),
-                                data: new Date().toISOString()
-                            };
-                            
-                            await addAlert(alertData);
-                        }
-                    }
-                    
-                    closeModal('bulkAlertModal');
-                    showMessage(`Alerta enviado para ${clients.filter(c => c.status === 'active').length} clientes ativos!`, 'success');
-                    await loadAdminData();
-                    
-                } catch (error) {
-                    showMessage(`Erro: ${error.message}`, 'danger');
-                }
-            }
-            
-            // Funções utilitárias
-            function switchAdminTab(e) {
-                const tab = e.target.getAttribute('data-tab');
-                
-                document.querySelectorAll('#adminTabs .tab').forEach(t => {
-                    t.classList.remove('active');
-                });
-                e.target.classList.add('active');
-                
-                document.querySelectorAll('#adminArea .tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                document.getElementById(tab).classList.add('active');
-            }
-            
-            function showLoginMessage(message, type) {
-                const messageDiv = document.getElementById('loginMessage');
-                messageDiv.textContent = message;
-                messageDiv.className = `alert alert-${type}`;
-                messageDiv.classList.remove('hidden');
-            }
-            
-            function showMessage(message, type) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `glass-card alert-${type}`;
-                messageDiv.style.position = 'fixed';
-                messageDiv.style.top = '20px';
-                messageDiv.style.right = '20px';
-                messageDiv.style.zIndex = '1000';
-                messageDiv.style.maxWidth = '300px';
-                messageDiv.style.padding = '15px';
-                messageDiv.textContent = message;
-                
-                document.body.appendChild(messageDiv);
-                
-                setTimeout(() => {
-                    messageDiv.remove();
-                }, 5000);
-            }
-            
-            function resetLoginForm() {
-                document.getElementById('adminLoginForm').reset();
-                document.getElementById('loginMessage').classList.add('hidden');
-            }
-            
-            function formatCpf(cpf) {
-                if (!cpf) return '';
-                const cleaned = cpf.replace(/\D/g, '');
-                if (cleaned.length !== 11) return cpf;
-                return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-            }
-            
-            function formatDate(dateString) {
-                if (!dateString) return 'N/A';
-                const date = new Date(dateString);
-                return date.toLocaleDateString('pt-BR');
-            }
-            
-            function getInitials(name) {
-                return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-            }
-            
-            function getAlertIcon(type) {
-                const icons = {
-                    'info': 'fas fa-info-circle',
-                    'warning': 'fas fa-exclamation-triangle',
-                    'danger': 'fas fa-times-circle',
-                    'success': 'fas fa-check-circle'
-                };
-                return icons[type] || 'fas fa-bell';
-            }
-            
-            function getProjectStatusBadge(status) {
-                const badges = {
-                    'planning': 'badge-info',
-                    'in_progress': 'badge-success',
-                    'review': 'badge-warning',
-                    'completed': 'badge-secondary'
-                };
-                return badges[status] || 'badge-info';
-            }
-            
-            function generatePassword() {
-                return Math.random().toString(36).slice(-8);
-            }
-            
-            // Funções do IndexedDB
-            async function addClient(client) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.CLIENTS], 'readwrite');
-                    const store = transaction.objectStore(STORES.CLIENTS);
-                    const request = store.add(client);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function updateClient(client) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.CLIENTS], 'readwrite');
-                    const store = transaction.objectStore(STORES.CLIENTS);
-                    const request = store.put(client);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getClientById(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.CLIENTS], 'readonly');
-                    const store = transaction.objectStore(STORES.CLIENTS);
-                    const request = store.get(id);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAllClients() {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.CLIENTS], 'readonly');
-                    const store = transaction.objectStore(STORES.CLIENTS);
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function addProject(project) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.PROJECTS], 'readwrite');
-                    const store = transaction.objectStore(STORES.PROJECTS);
-                    const request = store.add(project);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function updateProject(project) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.PROJECTS], 'readwrite');
-                    const store = transaction.objectStore(STORES.PROJECTS);
-                    const request = store.put(project);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getProjectById(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.PROJECTS], 'readonly');
-                    const store = transaction.objectStore(STORES.PROJECTS);
-                    const request = store.get(id);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAllProjects() {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.PROJECTS], 'readonly');
-                    const store = transaction.objectStore(STORES.PROJECTS);
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function addLink(link) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.LINKS], 'readwrite');
-                    const store = transaction.objectStore(STORES.LINKS);
-                    const request = store.add(link);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function updateLink(link) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.LINKS], 'readwrite');
-                    const store = transaction.objectStore(STORES.LINKS);
-                    const request = store.put(link);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getLinkById(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.LINKS], 'readonly');
-                    const store = transaction.objectStore(STORES.LINKS);
-                    const request = store.get(id);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAllLinks() {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.LINKS], 'readonly');
-                    const store = transaction.objectStore(STORES.LINKS);
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function addOrientation(orientation) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ORIENTATIONS], 'readwrite');
-                    const store = transaction.objectStore(STORES.ORIENTATIONS);
-                    const request = store.add(orientation);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function updateOrientation(orientation) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ORIENTATIONS], 'readwrite');
-                    const store = transaction.objectStore(STORES.ORIENTATIONS);
-                    const request = store.put(orientation);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getOrientationById(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ORIENTATIONS], 'readonly');
-                    const store = transaction.objectStore(STORES.ORIENTATIONS);
-                    const request = store.get(id);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAllOrientations() {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ORIENTATIONS], 'readonly');
-                    const store = transaction.objectStore(STORES.ORIENTATIONS);
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function addAlert(alert) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ALERTS], 'readwrite');
-                    const store = transaction.objectStore(STORES.ALERTS);
-                    const request = store.add(alert);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function updateAlert(alert) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ALERTS], 'readwrite');
-                    const store = transaction.objectStore(STORES.ALERTS);
-                    const request = store.put(alert);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAlertById(id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ALERTS], 'readonly');
-                    const store = transaction.objectStore(STORES.ALERTS);
-                    const request = store.get(id);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAllAlerts() {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.ALERTS], 'readonly');
-                    const store = transaction.objectStore(STORES.ALERTS);
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            async function getAllDeadlines() {
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction([STORES.DEADLINES], 'readonly');
-                    const store = transaction.objectStore(STORES.DEADLINES);
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            
-            // Funções de operações administrativas
-            async function exportClients() {
-                try {
-                    const clients = await getAllClients();
-                    const dataStr = JSON.stringify(clients, null, 2);
-                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                    
-                    const exportFileDefaultName = `clientes_lg_${new Date().toISOString().split('T')[0]}.json`;
-                    
-                    const linkElement = document.createElement('a');
-                    linkElement.setAttribute('href', dataUri);
-                    linkElement.setAttribute('download', exportFileDefaultName);
-                    linkElement.click();
-                    
-                    showMessage('Clientes exportados com sucesso!', 'success');
-                } catch (error) {
-                    showMessage('Erro ao exportar clientes', 'danger');
-                }
-            }
-            
-            async function forceSync() {
-                showMessage('Sincronização forçada iniciada...', 'info');
-                // Aqui você implementaria a lógica de sincronização com o Supabase
-                setTimeout(() => {
-                    showMessage('Sincronização concluída!', 'success');
-                }, 2000);
-            }
-            
-            async function clearLocalData() {
-                if (confirm('Tem certeza que deseja limpar todos os dados locais? Esta ação não pode ser desfeita.')) {
-                    try {
-                        indexedDB.deleteDatabase(DB_NAME);
-                        localStorage.clear();
-                        showMessage('Dados locais limpos com sucesso! Recarregando...', 'success');
-                        setTimeout(() => location.reload(), 2000);
-                    } catch (error) {
-                        showMessage('Erro ao limpar dados', 'danger');
-                    }
-                }
-            }
-            
-            async function backupData() {
-                try {
-                    const allData = {
-                        clients: await getAllClients(),
-                        projects: await getAllProjects(),
-                        links: await getAllLinks(),
-                        orientations: await getAllOrientations(),
-                        alerts: await getAllAlerts(),
-                        backupDate: new Date().toISOString()
-                    };
-                    
-                    const dataStr = JSON.stringify(allData, null, 2);
-                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                    
-                    const exportFileDefaultName = `backup_lg_${new Date().toISOString().split('T')[0]}.json`;
-                    
-                    const linkElement = document.createElement('a');
-                    linkElement.setAttribute('href', dataUri);
-                    linkElement.setAttribute('download', exportFileDefaultName);
-                    linkElement.click();
-                    
-                    showMessage('Backup realizado com sucesso!', 'success');
-                } catch (error) {
-                    showMessage('Erro ao fazer backup', 'danger');
-                }
-            }
-            
-            // Funções globais para uso nos botões
-            window.editClient = async function(clientId) {
-                await openClientModal(clientId);
-            };
-            
-            window.toggleClientStatus = async function(clientId, currentStatus) {
-                const client = await getClientById(clientId);
-                if (client) {
-                    client.status = currentStatus === 'active' ? 'inactive' : 'active';
-                    await updateClient(client);
-                    showMessage(`Cliente ${client.status === 'active' ? 'ativado' : 'desativado'} com sucesso!`, 'success');
-                    await loadAdminData();
-                }
-            };
-            
-            window.editProject = async function(projectId) {
-                await openProjectModal(projectId);
-            };
-            
-            window.deleteProject = async function(projectId) {
-                if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                    try {
-                        // Aqui você implementaria a exclusão do projeto
-                        showMessage('Projeto excluído com sucesso!', 'success');
-                        await loadAdminData();
-                    } catch (error) {
-                        showMessage('Erro ao excluir projeto', 'danger');
-                    }
-                }
-            };
-            
-            window.editContent = async function(contentId, contentType) {
-                await openContentModal(contentType, contentId);
-            };
-            
-            window.toggleContentStatus = async function(contentId, contentType) {
-                let content;
-                switch(contentType) {
-                    case 'link':
-                        content = await getLinkById(contentId);
-                        if (content) {
-                            content.status = content.status === 'active' ? 'inactive' : 'active';
-                            await updateLink(content);
-                        }
-                        break;
-                    case 'orientation':
-                        content = await getOrientationById(contentId);
-                        if (content) {
-                            content.status = content.status === 'active' ? 'inactive' : 'active';
-                            await updateOrientation(content);
-                        }
-                        break;
-                    case 'alert':
-                        content = await getAlertById(contentId);
-                        if (content) {
-                            content.status = content.status === 'active' ? 'inactive' : 'active';
-                            await updateAlert(content);
-                        }
-                        break;
-                }
-                
-                if (content) {
-                    showMessage(`Conteúdo ${content.status === 'active' ? 'ativado' : 'desativado'} com sucesso!`, 'success');
-                    await loadAdminData();
-                }
-            };
-        });
-    </script>
+function updateRecord(storeName, data) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.put(data);
 
-<script>
-const SUPABASE_URL = 'https://ledpqcynvqbdbccebhbo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZHBxY3ludnFiZGJjY2ViaGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzODc3MjgsImV4cCI6MjA4NTk2MzcyOH0.s8GOzp4woujGuDc4vK9QXIf3cWLMENUnJfE4lt_YhLg';
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
 
-window.supabase = window.supabaseClient =
-    supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
+function deleteRecord(storeName, id) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(id);
 
-<!-- 3. INTEGRAÇÃO DIRETA (ÚNICA) -->
-<script>
-// INTEGRAÇÃO INDEXEDDB → TABELAS REAIS DO SUPABASE
-(function () {
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
 
-    const STORE_TABLE_MAP = {
-        acessos: 'acessos',
-        administradores: 'administradores',
-        alertas: 'alertas',
-        arquivos: 'arquivos',
-        clientes: 'clientes',
-        configuracoes: 'configuracoes',
-        links: 'links',
-        orientacoes: 'orientacoes',
-        prazos: 'prazos',
-        projetos: 'projetos'
-    };
+function getRecord(storeName, id) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(id);
 
-    function getClient() {
-        return window.supabase || null;
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getAllRecords(storeName) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.getAll();
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// ==================== UI FUNCTIONS ====================
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById(sectionId).classList.add('active');
+    event.target.classList.add('active');
+
+    if (sectionId === 'clients') loadClients();
+    if (sectionId === 'projects') loadProjects();
+    if (sectionId === 'deadlines') loadDeadlines();
+    if (sectionId === 'alerts') loadAlerts();
+    if (sectionId === 'links') loadLinks();
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.add('active');
+
+    if (modalId === 'clientModal') {
+        document.getElementById('clientForm').reset();
+        document.getElementById('clientId').value = '';
     }
+}
 
-    async function getUserId() {
-        const client = getClient();
-        if (!client) return null;
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
 
-        const { data } = await client.auth.getSession();
-        return data?.session?.user?.id || null;
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast toast-${type} active`;
+
+    setTimeout(() => {
+        toast.classList.remove('active');
+    }, 3000);
+}
+
+function formatCPF(cpf) {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR');
+}
+
+// ==================== DASHBOARD ====================
+async function updateDashboard() {
+    try {
+        const clients = await getAllRecords(STORES.clients);
+        const projects = await getAllRecords(STORES.projects);
+        const deadlines = await getAllRecords(STORES.deadlines);
+        const alerts = await getAllRecords(STORES.alerts);
+
+        document.getElementById('totalClients').textContent = clients.length;
+        document.getElementById('totalProjects').textContent = projects.filter(p => p.status !== 'completed').length;
+        document.getElementById('totalDeadlines').textContent = deadlines.filter(d => d.status === 'pendente').length;
+        document.getElementById('totalAlerts').textContent = alerts.filter(a => a.status === 'active').length;
+    } catch (error) {
+        console.error('Error updating dashboard:', error);
     }
+}
 
-    const originalMethods = {
-        put: IDBObjectStore.prototype.put,
-        add: IDBObjectStore.prototype.add,
-        delete: IDBObjectStore.prototype.delete
-    };
+// ==================== CLIENTS ====================
+async function loadClients() {
+    const tbody = document.getElementById('clientsTableBody');
+    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>';
 
-    async function sendToSupabase(storeName, method, key, value) {
-        const table = STORE_TABLE_MAP[storeName];
-        if (!table) return;
+    try {
+        const clients = await getAllRecords(STORES.clients);
 
-        const client = getClient();
-        const userId = await getUserId();
-        if (!client || !userId) return;
-
-        if (method === 'delete') {
-            await client
-                .from(table)
-                .delete()
-                .eq('id', key)
-                .eq('user_id', userId);
+        if (clients.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente cadastrado</p></div></td></tr>';
             return;
         }
 
-        const record = {
-            ...value,
-            id: key || value?.id,
-            user_id: userId,
-            updated_at: new Date().toISOString()
-        };
+        tbody.innerHTML = clients.map(client => `
+            <tr>
+                <td>${client.nome}</td>
+                <td>${formatCPF(client.cpf)}</td>
+                <td>${client.empresa || '-'}</td>
+                <td>${client.email || '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="editClient(${client.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('client', ${client.id}, '${client.nome}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading clients:', error);
+        showToast('Erro ao carregar clientes', 'danger');
+    }
+}
 
-        await client.from(table).upsert(record, { onConflict: 'id' });
+async function saveClient(event) {
+    event.preventDefault();
+
+    const client = {
+        nome: document.getElementById('clientName').value,
+        cpf: document.getElementById('clientCpf').value.replace(/\D/g, ''),
+        empresa: document.getElementById('clientCompany').value,
+        email: document.getElementById('clientEmail').value,
+        telefone: document.getElementById('clientPhone').value,
+        status: 'active',
+        created_at: new Date().toISOString()
+    };
+
+    const clientId = document.getElementById('clientId').value;
+
+    try {
+        if (clientId) {
+            client.id = parseInt(clientId);
+            await updateRecord(STORES.clients, client);
+            showToast('Cliente atualizado com sucesso!');
+        } else {
+            await addRecord(STORES.clients, client);
+            showToast('Cliente cadastrado com sucesso!');
+        }
+
+        closeModal('clientModal');
+        loadClients();
+        updateDashboard();
+    } catch (error) {
+        console.error('Error saving client:', error);
+        showToast('Erro ao salvar cliente', 'danger');
+    }
+}
+
+async function editClient(id) {
+    try {
+        const client = await getRecord(STORES.clients, id);
+        
+        document.getElementById('clientId').value = client.id;
+        document.getElementById('clientName').value = client.nome;
+        document.getElementById('clientCpf').value = client.cpf;
+        document.getElementById('clientCompany').value = client.empresa || '';
+        document.getElementById('clientEmail').value = client.email || '';
+        document.getElementById('clientPhone').value = client.telefone || '';
+
+        openModal('clientModal');
+    } catch (error) {
+        console.error('Error loading client:', error);
+        showToast('Erro ao carregar cliente', 'danger');
+    }
+}
+
+function searchClients() {
+    const searchTerm = document.getElementById('searchClients').value.toLowerCase();
+    const rows = document.querySelectorAll('#clientsTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// ==================== PROJECTS ====================
+async function openProjectModal() {
+    await loadClientsToSelect();
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectId').value = '';
+    openModal('projectModal');
+}
+
+async function loadClientsToSelect() {
+    try {
+        const clients = await getAllRecords(STORES.clients);
+        const selects = [
+            document.getElementById('projectClientId'),
+            document.getElementById('deadlineClientId'),
+            document.getElementById('alertClientId'),
+            document.getElementById('linkClientId')
+        ];
+
+        selects.forEach(select => {
+            if (select) {
+                select.innerHTML = '<option value="">Selecione um cliente</option>' +
+                    clients.map(c => `<option value="${c.id}" data-cpf="${c.cpf}">${c.nome}</option>`).join('');
+            }
+        });
+    } catch (error) {
+        console.error('Error loading clients to select:', error);
+    }
+}
+
+async function loadProjects() {
+    const tbody = document.getElementById('projectsTableBody');
+    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>';
+
+    try {
+        const projects = await getAllRecords(STORES.projects);
+        const clients = await getAllRecords(STORES.clients);
+        const clientMap = Object.fromEntries(clients.map(c => [c.id, c.nome]));
+
+        if (projects.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-project-diagram"></i><p>Nenhum projeto cadastrado</p></div></td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = projects.map(project => {
+            const statusBadge = {
+                'planning': 'badge-info',
+                'in_progress': 'badge-warning',
+                'completed': 'badge-success'
+            }[project.status] || 'badge-info';
+
+            return `
+                <tr>
+                    <td>${project.titulo}</td>
+                    <td>${clientMap[project.cliente_id] || 'N/A'}</td>
+                    <td><span class="badge ${statusBadge}">${project.status}</span></td>
+                    <td>${project.progresso || 0}%</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editProject(${project.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('project', ${project.id}, '${project.titulo}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        showToast('Erro ao carregar projetos', 'danger');
+    }
+}
+
+async function saveProject(event) {
+    event.preventDefault();
+
+    const clientId = parseInt(document.getElementById('projectClientId').value);
+    const clientSelect = document.getElementById('projectClientId');
+    const clientCpf = clientSelect.options[clientSelect.selectedIndex].getAttribute('data-cpf');
+
+    const project = {
+        cliente_id: clientId,
+        cliente_cpf: clientCpf,
+        titulo: document.getElementById('projectTitle').value,
+        descricao: document.getElementById('projectDescription').value,
+        status: document.getElementById('projectStatus').value,
+        progresso: parseInt(document.getElementById('projectProgress').value),
+        created_at: new Date().toISOString()
+    };
+
+    const projectId = document.getElementById('projectId').value;
+
+    try {
+        if (projectId) {
+            project.id = parseInt(projectId);
+            await updateRecord(STORES.projects, project);
+            showToast('Projeto atualizado com sucesso!');
+        } else {
+            await addRecord(STORES.projects, project);
+            showToast('Projeto cadastrado com sucesso!');
+        }
+
+        closeModal('projectModal');
+        loadProjects();
+        updateDashboard();
+    } catch (error) {
+        console.error('Error saving project:', error);
+        showToast('Erro ao salvar projeto', 'danger');
+    }
+}
+
+async function editProject(id) {
+    try {
+        await loadClientsToSelect();
+        const project = await getRecord(STORES.projects, id);
+        
+        document.getElementById('projectId').value = project.id;
+        document.getElementById('projectClientId').value = project.cliente_id;
+        document.getElementById('projectTitle').value = project.titulo;
+        document.getElementById('projectDescription').value = project.descricao || '';
+        document.getElementById('projectStatus').value = project.status;
+        document.getElementById('projectProgress').value = project.progresso || 0;
+
+        openModal('projectModal');
+    } catch (error) {
+        console.error('Error loading project:', error);
+        showToast('Erro ao carregar projeto', 'danger');
+    }
+}
+
+function searchProjects() {
+    const searchTerm = document.getElementById('searchProjects').value.toLowerCase();
+    const rows = document.querySelectorAll('#projectsTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// ==================== DEADLINES ====================
+async function openDeadlineModal() {
+    await loadClientsToSelect();
+    document.getElementById('deadlineForm').reset();
+    document.getElementById('deadlineId').value = '';
+    openModal('deadlineModal');
+}
+
+async function loadDeadlines() {
+    const tbody = document.getElementById('deadlinesTableBody');
+    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>';
+
+    try {
+        const deadlines = await getAllRecords(STORES.deadlines);
+        const clients = await getAllRecords(STORES.clients);
+        const clientMap = Object.fromEntries(clients.map(c => [c.id, c.nome]));
+
+        if (deadlines.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar-check"></i><p>Nenhum prazo cadastrado</p></div></td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = deadlines.map(deadline => {
+            const statusBadge = {
+                'pendente': 'badge-warning',
+                'em_andamento': 'badge-info',
+                'concluido': 'badge-success'
+            }[deadline.status] || 'badge-warning';
+
+            return `
+                <tr>
+                    <td>${deadline.titulo}</td>
+                    <td>${clientMap[deadline.cliente_id] || 'N/A'}</td>
+                    <td>${formatDate(deadline.data_limite)}</td>
+                    <td><span class="badge ${statusBadge}">${deadline.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editDeadline(${deadline.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('deadline', ${deadline.id}, '${deadline.titulo}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading deadlines:', error);
+        showToast('Erro ao carregar prazos', 'danger');
+    }
+}
+
+async function saveDeadline(event) {
+    event.preventDefault();
+
+    const clientId = parseInt(document.getElementById('deadlineClientId').value);
+    const clientSelect = document.getElementById('deadlineClientId');
+    const clientCpf = clientSelect.options[clientSelect.selectedIndex].getAttribute('data-cpf');
+
+    const deadline = {
+        cliente_id: clientId,
+        cliente_cpf: clientCpf,
+        titulo: document.getElementById('deadlineTitle').value,
+        descricao: document.getElementById('deadlineDescription').value,
+        data_limite: document.getElementById('deadlineDate').value,
+        status: document.getElementById('deadlineStatus').value,
+        created_at: new Date().toISOString()
+    };
+
+    const deadlineId = document.getElementById('deadlineId').value;
+
+    try {
+        if (deadlineId) {
+            deadline.id = parseInt(deadlineId);
+            await updateRecord(STORES.deadlines, deadline);
+            showToast('Prazo atualizado com sucesso!');
+        } else {
+            await addRecord(STORES.deadlines, deadline);
+            showToast('Prazo cadastrado com sucesso!');
+        }
+
+        closeModal('deadlineModal');
+        loadDeadlines();
+        updateDashboard();
+    } catch (error) {
+        console.error('Error saving deadline:', error);
+        showToast('Erro ao salvar prazo', 'danger');
+    }
+}
+
+async function editDeadline(id) {
+    try {
+        await loadClientsToSelect();
+        const deadline = await getRecord(STORES.deadlines, id);
+        
+        document.getElementById('deadlineId').value = deadline.id;
+        document.getElementById('deadlineClientId').value = deadline.cliente_id;
+        document.getElementById('deadlineTitle').value = deadline.titulo;
+        document.getElementById('deadlineDescription').value = deadline.descricao || '';
+        document.getElementById('deadlineDate').value = deadline.data_limite;
+        document.getElementById('deadlineStatus').value = deadline.status;
+
+        openModal('deadlineModal');
+    } catch (error) {
+        console.error('Error loading deadline:', error);
+        showToast('Erro ao carregar prazo', 'danger');
+    }
+}
+
+function searchDeadlines() {
+    const searchTerm = document.getElementById('searchDeadlines').value.toLowerCase();
+    const rows = document.querySelectorAll('#deadlinesTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// ==================== ALERTS ====================
+async function openAlertModal() {
+    await loadClientsToSelect();
+    document.getElementById('alertForm').reset();
+    document.getElementById('alertId').value = '';
+    openModal('alertModal');
+}
+
+async function loadAlerts() {
+    const tbody = document.getElementById('alertsTableBody');
+    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>';
+
+    try {
+        const alerts = await getAllRecords(STORES.alerts);
+        const clients = await getAllRecords(STORES.clients);
+        const clientMap = Object.fromEntries(clients.map(c => [c.id, c.nome]));
+
+        if (alerts.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-bell"></i><p>Nenhum alerta cadastrado</p></div></td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = alerts.map(alert => {
+            const typeBadge = {
+                'info': 'badge-info',
+                'warning': 'badge-warning',
+                'error': 'badge-danger',
+                'success': 'badge-success'
+            }[alert.tipo] || 'badge-info';
+
+            const statusBadge = alert.status === 'active' ? 'badge-success' : 'badge-danger';
+
+            return `
+                <tr>
+                    <td>${alert.titulo}</td>
+                    <td>${clientMap[alert.cliente_id] || 'N/A'}</td>
+                    <td><span class="badge ${typeBadge}">${alert.tipo}</span></td>
+                    <td><span class="badge ${statusBadge}">${alert.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editAlert(${alert.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('alert', ${alert.id}, '${alert.titulo}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading alerts:', error);
+        showToast('Erro ao carregar alertas', 'danger');
+    }
+}
+
+async function saveAlert(event) {
+    event.preventDefault();
+
+    const clientId = parseInt(document.getElementById('alertClientId').value);
+    const clientSelect = document.getElementById('alertClientId');
+    const clientCpf = clientSelect.options[clientSelect.selectedIndex].getAttribute('data-cpf');
+
+    const alert = {
+        cliente_id: clientId,
+        cliente_cpf: clientCpf,
+        titulo: document.getElementById('alertTitle').value,
+        mensagem: document.getElementById('alertMessage').value,
+        tipo: document.getElementById('alertType').value,
+        status: 'active',
+        created_at: new Date().toISOString()
+    };
+
+    const alertId = document.getElementById('alertId').value;
+
+    try {
+        if (alertId) {
+            alert.id = parseInt(alertId);
+            await updateRecord(STORES.alerts, alert);
+            showToast('Alerta atualizado com sucesso!');
+        } else {
+            await addRecord(STORES.alerts, alert);
+            showToast('Alerta cadastrado com sucesso!');
+        }
+
+        closeModal('alertModal');
+        loadAlerts();
+        updateDashboard();
+    } catch (error) {
+        console.error('Error saving alert:', error);
+        showToast('Erro ao salvar alerta', 'danger');
+    }
+}
+
+async function editAlert(id) {
+    try {
+        await loadClientsToSelect();
+        const alert = await getRecord(STORES.alerts, id);
+        
+        document.getElementById('alertId').value = alert.id;
+        document.getElementById('alertClientId').value = alert.cliente_id;
+        document.getElementById('alertTitle').value = alert.titulo;
+        document.getElementById('alertMessage').value = alert.mensagem || '';
+        document.getElementById('alertType').value = alert.tipo;
+
+        openModal('alertModal');
+    } catch (error) {
+        console.error('Error loading alert:', error);
+        showToast('Erro ao carregar alerta', 'danger');
+    }
+}
+
+function searchAlerts() {
+    const searchTerm = document.getElementById('searchAlerts').value.toLowerCase();
+    const rows = document.querySelectorAll('#alertsTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// ==================== LINKS ====================
+async function openLinkModal() {
+    await loadClientsToSelect();
+    document.getElementById('linkForm').reset();
+    document.getElementById('linkId').value = '';
+    openModal('linkModal');
+}
+
+async function loadLinks() {
+    const tbody = document.getElementById('linksTableBody');
+    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div><p>Carregando...</p></div></td></tr>';
+
+    try {
+        const links = await getAllRecords(STORES.links);
+        const clients = await getAllRecords(STORES.clients);
+        const clientMap = Object.fromEntries(clients.map(c => [c.id, c.nome]));
+
+        if (links.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-link"></i><p>Nenhum link cadastrado</p></div></td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = links.map(link => {
+            const statusBadge = link.status === 'active' ? 'badge-success' : 'badge-danger';
+
+            return `
+                <tr>
+                    <td>${link.titulo}</td>
+                    <td>${clientMap[link.cliente_id] || 'N/A'}</td>
+                    <td><a href="${link.url}" target="_blank" style="color: var(--primary);">${link.url}</a></td>
+                    <td><span class="badge ${statusBadge}">${link.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editLink(${link.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('link', ${link.id}, '${link.titulo}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading links:', error);
+        showToast('Erro ao carregar links', 'danger');
+    }
+}
+
+async function saveLink(event) {
+    event.preventDefault();
+
+    const clientId = parseInt(document.getElementById('linkClientId').value);
+    const clientSelect = document.getElementById('linkClientId');
+    const clientCpf = clientSelect.options[clientSelect.selectedIndex].getAttribute('data-cpf');
+
+    const link = {
+        cliente_id: clientId,
+        cliente_cpf: clientCpf,
+        titulo: document.getElementById('linkTitle').value,
+        url: document.getElementById('linkUrl').value,
+        descricao: document.getElementById('linkDescription').value,
+        status: 'active',
+        created_at: new Date().toISOString()
+    };
+
+    const linkId = document.getElementById('linkId').value;
+
+    try {
+        if (linkId) {
+            link.id = parseInt(linkId);
+            await updateRecord(STORES.links, link);
+            showToast('Link atualizado com sucesso!');
+        } else {
+            await addRecord(STORES.links, link);
+            showToast('Link cadastrado com sucesso!');
+        }
+
+        closeModal('linkModal');
+        loadLinks();
+        updateDashboard();
+    } catch (error) {
+        console.error('Error saving link:', error);
+        showToast('Erro ao salvar link', 'danger');
+    }
+}
+
+async function editLink(id) {
+    try {
+        await loadClientsToSelect();
+        const link = await getRecord(STORES.links, id);
+        
+        document.getElementById('linkId').value = link.id;
+        document.getElementById('linkClientId').value = link.cliente_id;
+        document.getElementById('linkTitle').value = link.titulo;
+        document.getElementById('linkUrl').value = link.url;
+        document.getElementById('linkDescription').value = link.descricao || '';
+
+        openModal('linkModal');
+    } catch (error) {
+        console.error('Error loading link:', error);
+        showToast('Erro ao carregar link', 'danger');
+    }
+}
+
+function searchLinks() {
+    const searchTerm = document.getElementById('searchLinks').value.toLowerCase();
+    const rows = document.querySelectorAll('#linksTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// ==================== DELETE ====================
+async function confirmDelete(type, id, name) {
+    if (!confirm(`Tem certeza que deseja excluir: ${name}?`)) return;
+
+    const storeMap = {
+        'client': STORES.clients,
+        'project': STORES.projects,
+        'deadline': STORES.deadlines,
+        'alert': STORES.alerts,
+        'link': STORES.links
+    };
+
+    try {
+        await deleteRecord(storeMap[type], id);
+        showToast(`${name} excluído com sucesso!`);
+        
+        if (type === 'client') loadClients();
+        if (type === 'project') loadProjects();
+        if (type === 'deadline') loadDeadlines();
+        if (type === 'alert') loadAlerts();
+        if (type === 'link') loadLinks();
+        
+        updateDashboard();
+    } catch (error) {
+        console.error('Error deleting record:', error);
+        showToast('Erro ao excluir registro', 'danger');
+    }
+}
+
+// ==================== SUPABASE SYNC ====================
+function connectSupabase() {
+    const url = document.getElementById('supabaseUrl').value;
+    const key = document.getElementById('supabaseKey').value;
+
+    if (!url || !key) {
+        showToast('Por favor, preencha URL e Key do Supabase', 'danger');
+        return;
     }
 
-    IDBObjectStore.prototype.put = function (value, key) {
-        const request = originalMethods.put.apply(this, arguments);
-        request.onsuccess = (e) =>
-            sendToSupabase(this.name, 'put', key || e.target.result, value);
-        return request;
-    };
+    try {
+        supabaseClient = supabase.createClient(url, key);
+        showToast('Conectado ao Supabase com sucesso!', 'success');
+        addSyncLog('✅ Conectado ao Supabase!', 'success');
+    } catch (error) {
+        console.error('Connection error:', error);
+        showToast('Erro ao conectar ao Supabase', 'danger');
+        addSyncLog('❌ Erro de conexão: ' + error.message, 'error');
+    }
+}
 
-    IDBObjectStore.prototype.add = function (value, key) {
-        const request = originalMethods.add.apply(this, arguments);
-        request.onsuccess = (e) =>
-            sendToSupabase(this.name, 'add', key || e.target.result, value);
-        return request;
-    };
+function addSyncLog(message, type = 'info') {
+    const log = document.getElementById('syncLog');
+    const entry = document.createElement('div');
+    entry.className = `sync-log-entry sync-log-${type}`;
+    entry.textContent = `[${new Date().toLocaleTimeString('pt-BR')}] ${message}`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+}
 
-    IDBObjectStore.prototype.delete = function (key) {
-        const request = originalMethods.delete.apply(this, arguments);
-        request.onsuccess = () =>
-            sendToSupabase(this.name, 'delete', key, null);
-        return request;
-    };
+async function syncAllToSupabase() {
+    if (!supabaseClient) {
+        showToast('Conecte-se ao Supabase primeiro!', 'danger');
+        return;
+    }
 
-    console.log('✅ Integração IndexedDB → Supabase ativa');
-})();
-</script>
+    addSyncLog('🚀 Iniciando PUSH de dados para o Supabase...', 'info');
+    showToast('📤 Enviando dados para o Supabase...', 'info');
 
+    try {
+        await syncClientsToSupabase();
+        await syncProjectsToSupabase();
+        await syncDeadlinesToSupabase();
+        await syncAlertsToSupabase();
+        await syncLinksToSupabase();
+
+        addSyncLog('✅ PUSH completo! Todos os dados foram enviados com sucesso!', 'success');
+        showToast('✅ Sincronização PUSH concluída!', 'success');
+    } catch (error) {
+        console.error('Sync error:', error);
+        addSyncLog('❌ Erro no PUSH: ' + error.message, 'error');
+        showToast('❌ Erro na sincronização PUSH', 'danger');
+    }
+}
+
+async function syncClientsToSupabase() {
+    addSyncLog('📤 Enviando clientes para o Supabase...', 'info');
+    const clients = await getAllRecords(STORES.clients);
+    let successCount = 0;
+
+    for (const client of clients) {
+        try {
+            const senhaDefault = client.senha || `${client.cpf.substring(0, 6)}@Lg`;
+            
+            const { error } = await supabaseClient
+                .from(SUPABASE_TABLES.clients)
+                .upsert({
+                    id: client.id,
+                    local_id: client.id,
+                    nome: client.nome,
+                    cpf: client.cpf,
+                    email: client.email,
+                    senha: senhaDefault,
+                    status: client.status || 'active',
+                    criado_em: client.created_at
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            successCount++;
+            addSyncLog(`✅ Cliente "${client.nome}" sincronizado`, 'success');
+        } catch (error) {
+            addSyncLog(`❌ Erro ao sincronizar cliente ${client.nome}: ${error.message}`, 'error');
+        }
+    }
+
+    addSyncLog(`🎉 ${successCount} clientes sincronizados com sucesso!`, 'success');
+}
+
+async function syncProjectsToSupabase() {
+    addSyncLog('📤 Enviando projetos para o Supabase...', 'info');
+    const projects = await getAllRecords(STORES.projects);
+    let successCount = 0;
+
+    for (const project of projects) {
+        try {
+            const { error } = await supabaseClient
+                .from(SUPABASE_TABLES.projects)
+                .upsert({
+                    id: project.id,
+                    local_id: project.id,
+                    cliente_id: project.cliente_id,
+                    cpf: project.cliente_cpf,
+                    nome: project.titulo,
+                    descricao: project.descricao,
+                    status: project.status,
+                    progresso: project.progresso || 0,
+                    data_inicio: project.created_at
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            successCount++;
+            addSyncLog(`✅ Projeto "${project.titulo}" sincronizado`, 'success');
+        } catch (error) {
+            addSyncLog(`❌ Erro ao sincronizar projeto ${project.titulo}: ${error.message}`, 'error');
+        }
+    }
+
+    addSyncLog(`🎉 ${successCount} projetos sincronizados com sucesso!`, 'success');
+}
+
+async function syncDeadlinesToSupabase() {
+    addSyncLog('📤 Enviando prazos para o Supabase...', 'info');
+    const deadlines = await getAllRecords(STORES.deadlines);
+    let successCount = 0;
+
+    for (const deadline of deadlines) {
+        try {
+            const { error } = await supabaseClient
+                .from(SUPABASE_TABLES.deadlines)
+                .upsert({
+                    id: deadline.id,
+                    local_id: deadline.id,
+                    cliente_id: deadline.cliente_id,
+                    cpf: deadline.cliente_cpf,
+                    titulo: deadline.titulo,
+                    descricao: deadline.descricao,
+                    data: deadline.data_limite,
+                    status: deadline.status || 'pendente'
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            successCount++;
+            addSyncLog(`✅ Prazo "${deadline.titulo}" sincronizado`, 'success');
+        } catch (error) {
+            addSyncLog(`❌ Erro ao sincronizar prazo ${deadline.titulo}: ${error.message}`, 'error');
+        }
+    }
+
+    addSyncLog(`🎉 ${successCount} prazos sincronizados com sucesso!`, 'success');
+}
+
+async function syncAlertsToSupabase() {
+    addSyncLog('📤 Enviando alertas para o Supabase...', 'info');
+    const alerts = await getAllRecords(STORES.alerts);
+    let successCount = 0;
+
+    for (const alert of alerts) {
+        try {
+            const { error } = await supabaseClient
+                .from(SUPABASE_TABLES.alerts)
+                .upsert({
+                    id: alert.id,
+                    local_id: alert.id,
+                    cliente_id: alert.cliente_id,
+                    cpf: alert.cliente_cpf,
+                    titulo: alert.titulo,
+                    descricao: alert.mensagem,
+                    tipo: alert.tipo || 'info',
+                    status: alert.status || 'active',
+                    criado_em: alert.created_at
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            successCount++;
+            addSyncLog(`✅ Alerta "${alert.titulo}" sincronizado`, 'success');
+        } catch (error) {
+            addSyncLog(`❌ Erro ao sincronizar alerta ${alert.titulo}: ${error.message}`, 'error');
+        }
+    }
+
+    addSyncLog(`🎉 ${successCount} alertas sincronizados com sucesso!`, 'success');
+}
+
+async function syncLinksToSupabase() {
+    addSyncLog('📤 Enviando links para o Supabase...', 'info');
+    const links = await getAllRecords(STORES.links);
+    let successCount = 0;
+
+    for (const link of links) {
+        try {
+            const { error } = await supabaseClient
+                .from(SUPABASE_TABLES.links)
+                .upsert({
+                    id: link.id,
+                    local_id: link.id,
+                    cliente_id: link.cliente_id,
+                    cpf: link.cliente_cpf,
+                    titulo: link.titulo,
+                    url: link.url,
+                    descricao: link.descricao,
+                    status: link.status || 'active',
+                    criado_em: link.created_at
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            successCount++;
+            addSyncLog(`✅ Link "${link.titulo}" sincronizado`, 'success');
+        } catch (error) {
+            addSyncLog(`❌ Erro ao sincronizar link ${link.titulo}: ${error.message}`, 'error');
+        }
+    }
+
+    addSyncLog(`🎉 ${successCount} links sincronizados com sucesso!`, 'success');
+}
+
+async function syncAllFromSupabase() {
+    if (!supabaseClient) {
+        showToast('Conecte-se ao Supabase primeiro!', 'danger');
+        return;
+    }
+
+    addSyncLog('⬇️ Iniciando PULL de dados do Supabase...', 'info');
+    showToast('📥 Baixando dados do Supabase...', 'info');
+
+    try {
+        await downloadClientsFromSupabase();
+        await downloadProjectsFromSupabase();
+        await downloadDeadlinesFromSupabase();
+        await downloadAlertsFromSupabase();
+        await downloadLinksFromSupabase();
+
+        addSyncLog('✅ PULL completo! Todos os dados foram baixados com sucesso!', 'success');
+        showToast('✅ Sincronização PULL concluída!', 'success');
+        
+        loadClients();
+        loadProjects();
+        loadDeadlines();
+        loadAlerts();
+        loadLinks();
+        updateDashboard();
+    } catch (error) {
+        console.error('Download error:', error);
+        addSyncLog('❌ Erro no PULL: ' + error.message, 'error');
+        showToast('❌ Erro na sincronização PULL', 'danger');
+    }
+}
+
+async function downloadClientsFromSupabase() {
+    addSyncLog('📥 Baixando clientes do Supabase...', 'info');
+    
+    const { data, error } = await supabaseClient
+        .from(SUPABASE_TABLES.clients)
+        .select('*');
+
+    if (error) throw error;
+
+    for (const client of data) {
+        try {
+            const localClient = {
+                id: client.id || client.local_id,
+                nome: client.nome,
+                cpf: client.cpf,
+                email: client.email,
+                senha: client.senha,
+                status: client.status,
+                created_at: client.criado_em
+            };
+            
+            try {
+                await updateRecord(STORES.clients, localClient);
+            } catch (e) {
+                await addRecord(STORES.clients, localClient);
+            }
+        } catch (error) {
+            console.error('Error syncing client:', error);
+        }
+    }
+
+    addSyncLog(`✅ ${data.length} clientes baixados`, 'success');
+}
+
+async function downloadProjectsFromSupabase() {
+    addSyncLog('📥 Baixando projetos do Supabase...', 'info');
+    
+    const { data, error } = await supabaseClient
+        .from(SUPABASE_TABLES.projects)
+        .select('*');
+
+    if (error) throw error;
+
+    for (const project of data) {
+        try {
+            const localProject = {
+                id: project.id || project.local_id,
+                cliente_id: project.cliente_id,
+                cliente_cpf: project.cpf,
+                titulo: project.nome,
+                descricao: project.descricao,
+                status: project.status,
+                progresso: project.progresso,
+                created_at: project.data_inicio
+            };
+            
+            try {
+                await updateRecord(STORES.projects, localProject);
+            } catch (e) {
+                await addRecord(STORES.projects, localProject);
+            }
+        } catch (error) {
+            console.error('Error syncing project:', error);
+        }
+    }
+
+    addSyncLog(`✅ ${data.length} projetos baixados`, 'success');
+}
+
+async function downloadDeadlinesFromSupabase() {
+    addSyncLog('📥 Baixando prazos do Supabase...', 'info');
+    
+    const { data, error } = await supabaseClient
+        .from(SUPABASE_TABLES.deadlines)
+        .select('*');
+
+    if (error) throw error;
+
+    for (const deadline of data) {
+        try {
+            const localDeadline = {
+                id: deadline.id || deadline.local_id,
+                cliente_id: deadline.cliente_id,
+                cliente_cpf: deadline.cpf,
+                titulo: deadline.titulo,
+                descricao: deadline.descricao,
+                data_limite: deadline.data,
+                status: deadline.status,
+                created_at: deadline.data
+            };
+            
+            try {
+                await updateRecord(STORES.deadlines, localDeadline);
+            } catch (e) {
+                await addRecord(STORES.deadlines, localDeadline);
+            }
+        } catch (error) {
+            console.error('Error syncing deadline:', error);
+        }
+    }
+
+    addSyncLog(`✅ ${data.length} prazos baixados`, 'success');
+}
+
+async function downloadAlertsFromSupabase() {
+    addSyncLog('📥 Baixando alertas do Supabase...', 'info');
+    
+    const { data, error } = await supabaseClient
+        .from(SUPABASE_TABLES.alerts)
+        .select('*');
+
+    if (error) throw error;
+
+    for (const alert of data) {
+        try {
+            const localAlert = {
+                id: alert.id || alert.local_id,
+                cliente_id: alert.cliente_id,
+                cliente_cpf: alert.cpf,
+                titulo: alert.titulo,
+                mensagem: alert.descricao,
+                tipo: alert.tipo,
+                status: alert.status,
+                created_at: alert.criado_em
+            };
+            
+            try {
+                await updateRecord(STORES.alerts, localAlert);
+            } catch (e) {
+                await addRecord(STORES.alerts, localAlert);
+            }
+        } catch (error) {
+            console.error('Error syncing alert:', error);
+        }
+    }
+
+    addSyncLog(`✅ ${data.length} alertas baixados`, 'success');
+}
+
+async function downloadLinksFromSupabase() {
+    addSyncLog('📥 Baixando links do Supabase...', 'info');
+    
+    const { data, error } = await supabaseClient
+        .from(SUPABASE_TABLES.links)
+        .select('*');
+
+    if (error) throw error;
+
+    for (const link of data) {
+        try {
+            const localLink = {
+                id: link.id || link.local_id,
+                cliente_id: link.cliente_id,
+                cliente_cpf: link.cpf,
+                titulo: link.titulo,
+                url: link.url,
+                descricao: link.descricao,
+                status: link.status,
+                created_at: link.criado_em
+            };
+            
+            try {
+                await updateRecord(STORES.links, localLink);
+            } catch (e) {
+                await addRecord(STORES.links, localLink);
+            }
+        } catch (error) {
+            console.error('Error syncing link:', error);
+        }
+    }
+
+    addSyncLog(`✅ ${data.length} links baixados`, 'success');
+}
+
+// ==================== INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await initDB();
+        console.log('✅ IndexedDB iniciado com sucesso');
+        
+        updateDashboard();
+        loadClients();
+        
+        addSyncLog('✅ Sistema administrativo iniciado com sucesso!', 'success');
+    } catch (error) {
+        console.error('❌ Erro de inicialização:', error);
+        showToast('Erro ao inicializar sistema', 'danger');
+    }
+});
+    </script>
 </body>
 </html>
-
-
-
